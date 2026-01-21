@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StarEsport.eu</title>
+  <style>
+    :root{
+      --bg0:#05070f;
+      --bg1:#070a12;
+      --panel: rgba(255,255,255,0.03);
+      --card: rgba(255,255,255,0.04);
+      --border: #22304d;
+      --text: #e8eeff;
+      --muted:#7f8aa3;
+      --accent:#5aa7ff;
+      --accent2:#7bd3ff;
+      --danger:#ff5a7a;
+      --shadow: 0 22px 80px rgba(0,0,0,0.45);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 650px at 20% -10%, rgba(90,167,255,0.30), transparent 62%),
+        radial-gradient(700px 520px at 80% 10%, rgba(123,211,255,0.18), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+    a{ color:inherit; text-decoration:none; }
+
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(12px);
+      background: rgba(7,10,18,0.72);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{ max-width:1200px; margin:0 auto; padding:16px; }
+
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .brand{ display:flex; align-items:center; gap:12px; }
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      background: radial-gradient(circle at 30% 30%, var(--accent2), #2b5cff);
+      box-shadow: 0 10px 30px rgba(90,167,255,0.25);
+      flex:0 0 auto;
+    }
+    .brand strong{ display:block; font-size:16px; letter-spacing:.3px; }
+    .brand span{ display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:14px;
+    }
+    .tab{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:13px;
+      user-select:none;
+    }
+    .tab.active{
+      background: rgba(90,167,255,0.16);
+      border-color: rgba(90,167,255,0.50);
+    }
+
+    main{ padding: 18px 0 26px; }
+
+    .panel{ display:none; }
+    .panel.active{ display:block; }
+
+    .hero{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px 14px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .hero h1{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .hero p{ margin:6px 0 0; color:var(--muted); font-size:12px; line-height:1.45; }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(90,167,255,0.35);
+      background: rgba(90,167,255,0.10);
+      color:#bfe0ff;
+      font-weight:900;
+      font-size:12px;
+    }
+    .pill .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: var(--accent2);
+      box-shadow: 0 0 18px rgba(123,211,255,0.7);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:14px;
+    }
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+      border-radius: var(--radius);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.28);
+      overflow:hidden;
+    }
+
+    /* Team cards */
+    .player-thumb{
+      width:100%;
+      aspect-ratio: 16/10;
+      background:#0f1526;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted);
+      font-size:12px;
+      overflow:hidden;
+    }
+    .player-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .card-body{ padding:12px; }
+    .name{ font-size:15px; font-weight:900; }
+    .meta{ margin-top:4px; font-size:12px; color:var(--muted); }
+    .tag{
+      display:inline-block;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      color:#bfe0ff;
+      border:1px solid rgba(90,167,255,0.35);
+      background: rgba(90,167,255,0.10);
+    }
+
+    /* News list */
+    .list{ display:grid; gap:14px; }
+    .news{
+      display:grid;
+      grid-template-columns: 220px 1fr;
+      gap:12px;
+      padding:12px;
+      align-items:stretch;
+    }
+    .news-cover{
+      border:1px solid var(--border);
+      border-radius: 16px;
+      background:#0f1526;
+      overflow:hidden;
+      width:100%;
+      min-height:140px;
+    }
+    .news-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .news h3{ margin:0; font-size:16px; }
+    .news .date{ margin-top:6px; color:var(--muted); font-size:12px; }
+    .news .text{
+      margin-top:10px;
+      font-size:13px;
+      color:#cfd7ee;
+      line-height:1.5;
+      white-space:pre-wrap;
+    }
+
+    /* Tournament list */
+    .tour{
+      display:grid;
+      grid-template-columns: 220px 1fr;
+      gap:12px;
+      padding:12px;
+      align-items:center;
+    }
+    .tour-cover{
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#0f1526;
+      overflow:hidden;
+      width:100%;
+      height:140px;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted); font-size:12px;
+    }
+    .tour-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .tour h3{ margin:0; font-size:16px; }
+    .tour p{ margin:6px 0 0; color:var(--muted); font-size:12px; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .btn{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color:var(--text);
+      padding:9px 11px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      user-select:none;
+    }
+    .btn:hover{ border-color: rgba(90,167,255,0.55); }
+
+    /* Dialog */
+    dialog{
+      border:1px solid var(--border);
+      background: rgba(10,14,26,0.92);
+      color: var(--text);
+      border-radius: 16px;
+      width: min(980px, 92vw);
+      box-shadow: 0 30px 120px rgba(0,0,0,0.6);
+    }
+    dialog::backdrop{ background: rgba(0,0,0,0.55); }
+    .dlg-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      padding: 14px 14px 0 14px;
+    }
+    .dlg-head h2{ margin:0; font-size:18px; }
+    .dlg-body{ padding: 12px 14px 14px 14px; display:grid; gap:12px; }
+    .bigimg{
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:#0f1526;
+      display:none;
+    }
+    .bigimg img{ width:100%; height:auto; display:block; }
+    .dlg-meta{ color:var(--muted); font-size:12px; }
+
+    footer{
+      border-top:1px solid var(--border);
+      background: rgba(7,10,18,0.45);
+      margin-top:26px;
+    }
+    footer .wrap{ color:var(--muted); font-size:12px; }
+
+    @media (max-width: 760px){
+      .news, .tour{ grid-template-columns: 1fr; }
+      .news-cover, .tour-cover{ height:190px; min-height:190px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <strong>StarEsport.eu</strong>
+          <span>StarDivision • Team • News • Tournaments</span>
+        </div>
+      </div>
+      <div class="pill" title="Сайт читає дані з адмін-центра (localStorage)">
+        <span class="dot" aria-hidden="true"></span>
+        Connected to Admin
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Навігація">
+      <button class="tab active" data-tab="news" role="tab" aria-selected="true">Новини</button>
+      <button class="tab" data-tab="team" role="tab" aria-selected="false">Команда</button>
+      <button class="tab" data-tab="tournaments" role="tab" aria-selected="false">Турніри</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- NEWS -->
+  <section class="panel active" id="panel-news" role="tabpanel">
+    <div class="hero">
+      <div>
+        <h1>Новини StarDivision</h1>
+        <p>Оновлюй новини в адмін-центрі — тут вони з’являються автоматично (нові зверху).</p>
+      </div>
+      <div class="pill"><span class="dot" aria-hidden="true"></span><span id="newsCount">0</span> News</div>
+    </div>
+
+    <div class="list" id="newsList"></div>
+    <div id="newsEmpty" style="display:none;color:var(--muted);">Поки що немає новин.</div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="panel" id="panel-team" role="tabpanel">
+    <div class="hero">
+      <div>
+        <h1>Команда</h1>
+        <p>Ніки, ролі та фото беруться з адмін-центра. Міняй — і тут оновиться.</p>
+      </div>
+      <div class="pill"><span class="dot" aria-hidden="true"></span><span id="teamCount">0</span> Players</div>
+    </div>
+
+    <div class="grid" id="teamGrid"></div>
+  </section>
+
+  <!-- TOURNAMENTS -->
+  <section class="panel" id="panel-tournaments" role="tabpanel">
+    <div class="hero">
+      <div>
+        <h1>Турніри</h1>
+        <p>Турніри зберігаються і накопичуються. Натисни “Відкрити”, щоб побачити деталі.</p>
+      </div>
+      <div class="pill"><span class="dot" aria-hidden="true"></span><span id="tourCount">0</span> Tours</div>
+    </div>
+
+    <div class="list" id="tourList"></div>
+    <div id="tourEmpty" style="display:none;color:var(--muted);">Поки що немає турнірів.</div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">© <span id="year"></span> StarEsport.eu</div>
+</footer>
+
+<dialog id="tourDialog">
+  <div class="dlg-head">
+    <h2 id="dlgTitle">Турнір</h2>
+    <button class="btn" id="dlgClose">Закрити</button>
+  </div>
+  <div class="dlg-body">
+    <div class="bigimg" id="dlgCoverWrap"><img id="dlgCover" alt="Обкладинка турніру"></div>
+    <div class="bigimg" id="dlgBracketWrap"><img id="dlgBracket" alt="Сітка турніру"></div>
+    <div class="dlg-meta" id="dlgMeta"></div>
+  </div>
+</dialog>
+
+<script>
+  // =========================
+  // CONNECT TO ADMIN STORAGE
+  // =========================
+  const STORAGE_KEY = "staresport_data_v1";
+
+  function uid(){
+    if (crypto?.randomUUID) return crypto.randomUUID();
+    return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+  }
+
+  // Мінімальний дефолт, якщо localStorage пустий (але адмін зазвичай вже створює дані)
+  const defaultData = {
+    players: [
+      { id: uid(), nickname: "Robo", role: "Rifler", photoDataUrl: "" },
+      { id: uid(), nickname: "Zeus", role: "Capitan", photoDataUrl: "" },
+      { id: uid(), nickname: "JL", role: "Suport", photoDataUrl: "" },
+      { id: uid(), nickname: "SeWa", role: "Rifler", photoDataUrl: "" },
+      { id: uid(), nickname: "Lattyk", role: "AWP", photoDataUrl: "" },
+    ],
+    news: [],
+    tournaments: []
+  };
+
+  function loadData(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+        return structuredClone(defaultData);
+      }
+      const data = JSON.parse(raw);
+
+      // Міграції/гарантії
+      if(!Array.isArray(data.players)) data.players = [];
+      if(!Array.isArray(data.news)) data.news = [];
+      if(!Array.isArray(data.tournaments)) data.tournaments = [];
+
+      if(data.players.length < 5){
+        const need = 5 - data.players.length;
+        for(let i=0;i<need;i++){
+          data.players.push({ id: uid(), nickname: "StarPlayer" + (data.players.length+1), role:"Player", photoDataUrl:"" });
+        }
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      return data;
+    }catch(e){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+      return structuredClone(defaultData);
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  function formatDate(iso){
+    if(!iso) return "—";
+    try{
+      const d = new Date(iso);
+      return d.toLocaleString("uk-UA", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }catch{ return "—"; }
+  }
+
+  // =========================
+  // RENDER
+  // =========================
+  function renderTeam(players){
+    const grid = document.getElementById("teamGrid");
+    grid.innerHTML = "";
+    document.getElementById("teamCount").textContent = String(players.length);
+
+    players.forEach(p=>{
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="player-thumb">
+          ${p.photoDataUrl ? `<img src="${p.photoDataUrl}" alt="Фото ${escapeHtml(p.nickname)}">` : `Нема фото`}
+        </div>
+        <div class="card-body">
+          <div class="name">${escapeHtml(p.nickname || "Player")}</div>
+          <div class="meta">${escapeHtml(p.role || "Гравець")}</div>
+          <div class="tag">StarDivision</div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function renderNews(news){
+    const list = document.getElementById("newsList");
+    const empty = document.getElementById("newsEmpty");
+    list.innerHTML = "";
+
+    const sorted = [...news].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
+    document.getElementById("newsCount").textContent = String(sorted.length);
+
+    if(sorted.length === 0){
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+
+    sorted.forEach(n=>{
+      const card = document.createElement("div");
+      card.className = "card news";
+      const cover = n.photoDataUrl
+        ? `<div class="news-cover"><img src="${n.photoDataUrl}" alt="Фото новини"></div>`
+        : `<div class="news-cover" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;">Нема фото</div>`;
+      card.innerHTML = `
+        ${cover}
+        <div>
+          <h3>${escapeHtml(n.title || "Без заголовка")}</h3>
+          <div class="date">Опубліковано: ${formatDate(n.createdAt)}</div>
+          <div class="text">${escapeHtml(n.text || "")}</div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function renderTournaments(tournaments){
+    const list = document.getElementById("tourList");
+    const empty = document.getElementById("tourEmpty");
+    list.innerHTML = "";
+
+    const sorted = [...tournaments].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
+    document.getElementById("tourCount").textContent = String(sorted.length);
+
+    if(sorted.length === 0){
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+
+    sorted.forEach(t=>{
+      const card = document.createElement("div");
+      card.className = "card tour";
+      const cover = t.coverDataUrl
+        ? `<div class="tour-cover"><img src="${t.coverDataUrl}" alt="Обкладинка"></div>`
+        : `<div class="tour-cover">Нема cover</div>`;
+      card.innerHTML = `
+        ${cover}
+        <div>
+          <h3>${escapeHtml(t.title || "Турнір")}</h3>
+          <p>Додано: ${formatDate(t.createdAt)}</p>
+          <div class="row">
+            <button class="btn" data-open="${t.id}">Відкрити</button>
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    list.querySelectorAll("[data-open]").forEach(btn=>{
+      btn.addEventListener("click", ()=>openTournament(btn.dataset.open));
+    });
+  }
+
+  // =========================
+  // Tournament dialog
+  // =========================
+  function openTournament(id){
+    const data = loadData();
+    const t = data.tournaments.find(x=>x.id===id);
+    if(!t) return;
+
+    const dlg = document.getElementById("tourDialog");
+    document.getElementById("dlgTitle").textContent = t.title || "Турнір";
+    document.getElementById("dlgMeta").textContent = `ID: ${t.id} • Додано: ${formatDate(t.createdAt)}`;
+
+    const coverWrap = document.getElementById("dlgCoverWrap");
+    const bracketWrap = document.getElementById("dlgBracketWrap");
+    const cover = document.getElementById("dlgCover");
+    const bracket = document.getElementById("dlgBracket");
+
+    if(t.coverDataUrl){
+      cover.src = t.coverDataUrl + "#v=" + Date.now();
+      coverWrap.style.display = "block";
+    }else{
+      coverWrap.style.display = "none";
+      cover.src = "";
+    }
+
+    if(t.bracketDataUrl){
+      bracket.src = t.bracketDataUrl + "#v=" + Date.now();
+      bracketWrap.style.display = "block";
+    }else{
+      bracketWrap.style.display = "none";
+      bracket.src = "";
+    }
+
+    dlg.showModal();
+  }
+
+  document.getElementById("dlgClose").addEventListener("click", ()=>{
+    document.getElementById("tourDialog").close();
+  });
+
+  // =========================
+  // Tabs
+  // =========================
+  const tabs = document.querySelectorAll(".tab");
+  const panels = {
+    news: document.getElementById("panel-news"),
+    team: document.getElementById("panel-team"),
+    tournaments: document.getElementById("panel-tournaments")
+  };
+
+  function setTab(name){
+    tabs.forEach(t=>{
+      const active = t.dataset.tab === name;
+      t.classList.toggle("active", active);
+      t.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    Object.keys(panels).forEach(k=>{
+      panels[k].classList.toggle("active", k === name);
+    });
+  }
+
+  tabs.forEach(t=>{
+    t.addEventListener("click", ()=>setTab(t.dataset.tab));
+  });
+
+  // =========================
+  // Init + Sync with Admin
+  // =========================
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  function rerender(){
+    const data = loadData();
+    renderNews(data.news);
+    renderTeam(data.players);
+    renderTournaments(data.tournaments);
+  }
+
+  rerender();
+
+  // Оновлення при зміні в іншій вкладці
+  window.addEventListener("storage", (e)=>{
+    if(e.key === STORAGE_KEY) rerender();
+  });
+
+  // Надійне автооновлення (якщо браузер не дає storage івент або ти швидко правиш)
+  setInterval(rerender, 1200);
+
+  // Стартова вкладка: Новини
+  setTab("news");
+</script>
+
+</body>
+</html>
