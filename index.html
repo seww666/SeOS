@@ -1,589 +1,1022 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>StarEsport.eu</title>
-  <style>
-    :root{
-      --bg0:#05070f;
-      --bg1:#070a12;
-      --panel: rgba(255,255,255,0.03);
-      --card: rgba(255,255,255,0.04);
-      --border: #22304d;
-      --text: #e8eeff;
-      --muted:#7f8aa3;
-      --accent:#5aa7ff;
-      --accent2:#7bd3ff;
-      --danger:#ff5a7a;
-      --shadow: 0 22px 80px rgba(0,0,0,0.45);
-      --radius: 18px;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      color:var(--text);
-      background:
-        radial-gradient(900px 650px at 20% -10%, rgba(90,167,255,0.30), transparent 62%),
-        radial-gradient(700px 520px at 80% 10%, rgba(123,211,255,0.18), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      min-height:100vh;
-    }
-    a{ color:inherit; text-decoration:none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>UPGRADER - Один в один як у Фігмі</title>
+    <style>
+        :root {
+            --bg-main: #0c0d12;
+            --bg-panel: #14151c;
+            --bg-card: #1a1c24;
+            --accent-yellow: #ffd000;
+            --accent-yellow-hover: #e6bc00;
+            --text-white: #ffffff;
+            --text-gray: #787d91;
+            --border-color: #222530;
+        }
 
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter: blur(12px);
-      background: rgba(7,10,18,0.72);
-      border-bottom:1px solid var(--border);
-    }
-    .wrap{ max-width:1200px; margin:0 auto; padding:16px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    .top{
-      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    }
-    .brand{ display:flex; align-items:center; gap:12px; }
-    .logo{
-      width:40px; height:40px; border-radius:14px;
-      background: radial-gradient(circle at 30% 30%, var(--accent2), #2b5cff);
-      box-shadow: 0 10px 30px rgba(90,167,255,0.25);
-      flex:0 0 auto;
-    }
-    .brand strong{ display:block; font-size:16px; letter-spacing:.3px; }
-    .brand span{ display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    .tabs{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:14px;
-    }
-    .tab{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:14px;
-      cursor:pointer;
-      font-weight:800;
-      font-size:13px;
-      user-select:none;
-    }
-    .tab.active{
-      background: rgba(90,167,255,0.16);
-      border-color: rgba(90,167,255,0.50);
-    }
+        /* --- ХЕДЕР --- */
+        header {
+            height: 60px;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 10;
+        }
 
-    main{ padding: 18px 0 26px; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
 
-    .panel{ display:none; }
-    .panel.active{ display:block; }
+        .logo {
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .logo span { color: var(--accent-yellow); }
 
-    .hero{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:14px 14px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-    .hero h1{ margin:0; font-size:18px; letter-spacing:.2px; }
-    .hero p{ margin:6px 0 0; color:var(--muted); font-size:12px; line-height:1.45; }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(90,167,255,0.35);
-      background: rgba(90,167,255,0.10);
-      color:#bfe0ff;
-      font-weight:900;
-      font-size:12px;
-    }
-    .pill .dot{
-      width:8px; height:8px; border-radius:99px;
-      background: var(--accent2);
-      box-shadow: 0 0 18px rgba(123,211,255,0.7);
-    }
+        .stats {
+            display: none;
+            gap: 15px;
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+        .stats span { color: #fff; font-weight: 600; }
+        .stats .online::before {
+            content: ''; display: inline-block; width: 6px; height: 6px; 
+            background: #2ed573; border-radius: 50%; margin-right: 4px; transform: translateY(-1px);
+        }
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap:14px;
-    }
-    .card{
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
-      border-radius: var(--radius);
-      box-shadow: 0 18px 60px rgba(0,0,0,0.28);
-      overflow:hidden;
-    }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    /* Team cards */
-    .player-thumb{
-      width:100%;
-      aspect-ratio: 16/10;
-      background:#0f1526;
-      display:flex; align-items:center; justify-content:center;
-      color:var(--muted);
-      font-size:12px;
-      overflow:hidden;
-    }
-    .player-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .card-body{ padding:12px; }
-    .name{ font-size:15px; font-weight:900; }
-    .meta{ margin-top:4px; font-size:12px; color:var(--muted); }
-    .tag{
-      display:inline-block;
-      margin-top:10px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      color:#bfe0ff;
-      border:1px solid rgba(90,167,255,0.35);
-      background: rgba(90,167,255,0.10);
-    }
+        .user-profile-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a1c24;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 12px;
+        }
 
-    /* News list */
-    .list{ display:grid; gap:14px; }
-    .news{
-      display:grid;
-      grid-template-columns: 220px 1fr;
-      gap:12px;
-      padding:12px;
-      align-items:stretch;
-    }
-    .news-cover{
-      border:1px solid var(--border);
-      border-radius: 16px;
-      background:#0f1526;
-      overflow:hidden;
-      width:100%;
-      min-height:140px;
-    }
-    .news-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .news h3{ margin:0; font-size:16px; }
-    .news .date{ margin-top:6px; color:var(--muted); font-size:12px; }
-    .news .text{
-      margin-top:10px;
-      font-size:13px;
-      color:#cfd7ee;
-      line-height:1.5;
-      white-space:pre-wrap;
-    }
+        .user-avatar {
+            width: 28px; height: 28px;
+            border-radius: 4px;
+            background: var(--accent-yellow);
+            flex-shrink: 0;
+        }
 
-    /* Tournament list */
-    .tour{
-      display:grid;
-      grid-template-columns: 220px 1fr;
-      gap:12px;
-      padding:12px;
-      align-items:center;
-    }
-    .tour-cover{
-      border:1px solid var(--border);
-      border-radius:16px;
-      background:#0f1526;
-      overflow:hidden;
-      width:100%;
-      height:140px;
-      display:flex; align-items:center; justify-content:center;
-      color:var(--muted); font-size:12px;
-    }
-    .tour-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .tour h3{ margin:0; font-size:16px; }
-    .tour p{ margin:6px 0 0; color:var(--muted); font-size:12px; }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .btn{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.03);
-      color:var(--text);
-      padding:9px 11px;
-      border-radius: 14px;
-      cursor:pointer;
-      font-weight:900;
-      font-size:13px;
-      user-select:none;
-    }
-    .btn:hover{ border-color: rgba(90,167,255,0.55); }
+        .user-balance {
+            font-weight: 700;
+            color: var(--accent-yellow);
+            font-size: 13px;
+        }
 
-    /* Dialog */
-    dialog{
-      border:1px solid var(--border);
-      background: rgba(10,14,26,0.92);
-      color: var(--text);
-      border-radius: 16px;
-      width: min(980px, 92vw);
-      box-shadow: 0 30px 120px rgba(0,0,0,0.6);
-    }
-    dialog::backdrop{ background: rgba(0,0,0,0.55); }
-    .dlg-head{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      padding: 14px 14px 0 14px;
-    }
-    .dlg-head h2{ margin:0; font-size:18px; }
-    .dlg-body{ padding: 12px 14px 14px 14px; display:grid; gap:12px; }
-    .bigimg{
-      border:1px solid var(--border);
-      border-radius:16px;
-      overflow:hidden;
-      background:#0f1526;
-      display:none;
-    }
-    .bigimg img{ width:100%; height:auto; display:block; }
-    .dlg-meta{ color:var(--muted); font-size:12px; }
+        .btn-add-funds {
+            background: #2ed573;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
 
-    footer{
-      border-top:1px solid var(--border);
-      background: rgba(7,10,18,0.45);
-      margin-top:26px;
-    }
-    footer .wrap{ color:var(--muted); font-size:12px; }
+        /* --- ОСНОВНИЙ КОНТЕНТ --- */
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-top: 60px;
+            height: calc(100vh - 60px);
+            width: 100%;
+            overflow: hidden;
+        }
 
-    @media (max-width: 760px){
-      .news, .tour{ grid-template-columns: 1fr; }
-      .news-cover, .tour-cover{ height:190px; min-height:190px; }
-    }
-  </style>
+        /* Лівий Сайдбар */
+        .sidebar {
+            display: none;
+            width: 100%;
+            height: 70px;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 8px 5px;
+            gap: 8px;
+            flex-direction: row;
+        }
+
+        .sidebar::-webkit-scrollbar { height: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #222530; border-radius: 2px; }
+
+        .sidebar-item {
+            background: linear-gradient(135deg, #191b24 0%, #111218 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+            font-size: 9px;
+            color: var(--text-gray);
+            flex-shrink: 0;
+            width: 60px;
+        }
+        .sidebar-item img { width: 100%; height: 40px; object-fit: contain; }
+
+        /* Робоча зона */
+        .main-workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-main);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 15px 12px;
+            gap: 15px;
+        }
+
+        .main-workspace::-webkit-scrollbar { width: 3px; }
+        .main-workspace::-webkit-scrollbar-thumb { background: #222530; border-radius: 2px; }
+
+        /* Зони вибору та Апгрейдер */
+        .upgrade-floor {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drop-zone {
+            width: 100%;
+            min-height: 150px;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .drop-zone .placeholder-text {
+            color: var(--text-gray);
+            font-size: 12px;
+            max-width: 200px;
+            line-height: 1.4;
+            z-index: 2;
+        }
+
+        .drop-zone .bg-icon {
+            position: absolute;
+            font-size: 50px;
+            color: #1c1e29;
+            font-weight: 900;
+            z-index: 1;
+        }
+
+        /* --- КОЛЕСО АПГРЕЙДУ --- */
+        .center-wheel-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .wheel-spinner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .wheel-ticker-arrow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: none;
+        }
+
+        .wheel-ticker-arrow.spinning {
+            animation: spinTicker 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes spinTicker {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(var(--final-rotation, 0deg)); }
+        }
+
+        .radial-center-button {
+            position: relative;
+            z-index: 4;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .radial-center-button span {
+            color: var(--accent-yellow);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 10px solid var(--accent-yellow);
+            filter: drop-shadow(0 0 3px var(--accent-yellow));
+        }
+
+        .btn-action-upgrade {
+            width: 100%;
+            background-color: var(--accent-yellow);
+            color: #000;
+            border: none;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+        .btn-action-upgrade:disabled {
+            background-color: #222530;
+            color: var(--text-gray);
+            cursor: not-allowed;
+        }
+        .btn-action-upgrade:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        /* --- ІНВЕНТАРІ ТА МАГАЗИН --- */
+        .inventory-floor {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .inventory-box {
+            flex: 1;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;
+        }
+
+        .box-header {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .box-header span { color: var(--accent-yellow); }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 6px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 3px;
+        }
+        .inventory-grid::-webkit-scrollbar { width: 3px; }
+        .inventory-grid::-webkit-scrollbar-thumb { background: #222530; border-radius: 2px; }
+
+        /* Картки скінів */
+        .skin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .skin-card:active { border-color: var(--accent-yellow); background: #222530; }
+        
+        .skin-img-wrapper {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 3px 0;
+        }
+
+        .skin-card img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
+        }
+        
+        .skin-card .card-name {
+            font-size: 9px; font-weight: 600; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+        }
+        .skin-card .card-price {
+            font-size: 10px; color: var(--accent-yellow); font-weight: 700;
+        }
+
+        .btn-buy-skin {
+            background: #ffd000;
+            border: none;
+            color: black;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 3px 0;
+            border-radius: 3px;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+        .btn-buy-skin:active {
+            transform: scale(0.95);
+        }
+
+        .empty-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-gray);
+            font-size: 12px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Обраний скін в слоті */
+        .selected-skin-inner {
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .selected-skin-inner img { height: 80px; object-fit: contain; }
+        .selected-skin-inner .s-name { font-weight: 700; margin-top: 6px; font-size: 11px; line-height: 1.2;}
+        .selected-skin-inner .s-price { color: var(--accent-yellow); font-weight: 800; margin-top: 2px; font-size: 12px;}
+
+        /* Модалка результату */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: var(--bg-panel); padding: 25px; border-radius: 12px;
+            border: 1px solid var(--border-color); text-align: center; max-width: 90%; width: 100%;
+        }
+        .m-status { font-size: 18px; font-weight: 900; margin-bottom: 12px; }
+        .m-success { color: #2ed573; }
+        .m-fail { color: #ff4757; }
+        .m-btn {
+            margin-top: 15px; padding: 12px 25px; background: var(--accent-yellow);
+            color: #000; border: none; font-weight: 700; border-radius: 4px; cursor: pointer;
+            font-size: 14px;
+        }
+        .m-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* --- ПЛАНШЕТ (768px+) --- */
+        @media (min-width: 768px) {
+            .logo { font-size: 18px; }
+            
+            .sidebar {
+                display: flex;
+                width: 100px;
+                height: auto;
+                flex-direction: column;
+                border-right: 1px solid var(--border-color);
+                border-bottom: none;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .sidebar-item {
+                width: 100%;
+                height: auto;
+            }
+
+            .wrapper {
+                flex-direction: row;
+            }
+
+            .upgrade-floor {
+                flex-direction: row;
+            }
+
+            .drop-zone {
+                flex: 1;
+                min-height: 200px;
+            }
+
+            .center-wheel-area {
+                width: 220px;
+                gap: 15px;
+            }
+
+            .wheel-container {
+                width: 180px;
+                height: 180px;
+            }
+
+            .radial-center-button {
+                font-size: 24px;
+            }
+
+            .inventory-floor {
+                flex-direction: row;
+                gap: 20px;
+            }
+
+            .inventory-box {
+                flex: 1;
+                min-width: 320px;
+                min-height: 350px;
+            }
+
+            .inventory-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .skin-card {
+                padding: 8px;
+            }
+
+            .skin-img-wrapper {
+                height: 60px;
+            }
+
+            .selected-skin-inner img { height: 100px; }
+
+            .stats {
+                display: flex;
+            }
+
+            .user-profile-block {
+                gap: 12px;
+                padding: 6px 12px;
+            }
+        }
+
+        /* --- ДЕСКТОП (1024px+) --- */
+        @media (min-width: 1024px) {
+            .logo { font-size: 20px; letter-spacing: 1px; }
+            
+            header {
+                padding: 0 20px;
+            }
+
+            .header-left {
+                gap: 25px;
+            }
+
+            .sidebar {
+                width: 110px;
+                padding: 10px 5px;
+                gap: 8px;
+            }
+
+            .main-workspace {
+                padding: 25px;
+            }
+
+            .upgrade-floor {
+                gap: 20px;
+            }
+
+            .drop-zone {
+                min-height: 240px;
+            }
+
+            .center-wheel-area {
+                width: 260px;
+            }
+
+            .wheel-container {
+                width: 220px;
+                height: 220px;
+            }
+
+            .radial-center-button {
+                font-size: 26px;
+            }
+
+            .inventory-floor {
+                gap: 20px;
+            }
+
+            .inventory-box {
+                min-width: 340px;
+                height: 400px;
+            }
+
+            .inventory-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .selected-skin-inner img { height: 100px; }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <strong>StarEsport.eu</strong>
-          <span>StarDivision • Team • News • Tournaments</span>
+    <!-- ХЕДЕР -->
+    <header>
+        <div class="header-left">
+            <div class="logo">▲ UPGRADER<span></span></div>
+            <div class="stats">
+                <div class="online">Онлайн: <span>451</span></div>
+                <div>Апгрейдів: <span>174532</span></div>
+            </div>
         </div>
-      </div>
-      <div class="pill" title="Сайт читає дані з адмін-центра (localStorage)">
-        <span class="dot" aria-hidden="true"></span>
-        Connected to Admin
-      </div>
+        <div class="header-right">
+            <div class="user-profile-block">
+                <div class="user-avatar"></div>
+                <div>
+                    <div style="font-size: 10px; color: var(--text-gray);">Баланс</div>
+                    <div class="user-balance">$<span id="balance-amount">550.0</span></div>
+                </div>
+                <button class="btn-add-funds" onclick="depositMoney()">+$50</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrapper">
+        <!-- ЛІВИЙ САЙДБАР -->
+        <div class="sidebar" id="live-sidebar"></div>
+
+        <!-- РОБОЧА ЗОНА -->
+        <div class="main-workspace">
+            
+            <!-- ВЕРХНЯ ПАНЕЛЬ -->
+            <div class="upgrade-floor">
+                <!-- Ліва зона (Твій скін) -->
+                <div class="drop-zone" id="user-zone" onclick="removeSelectedUserSkin()">
+                    <div class="bg-icon">▲</div>
+                    <div class="placeholder-text" id="user-placeholder">
+                        Виберіть скін нижче
+                    </div>
+                </div>
+
+                <!-- Центр (Перероблена крутилка) -->
+                <div class="center-wheel-area">
+                    <div class="wheel-container">
+                        <!-- СТАТИЧНИЙ КРУГ З СЕКТОРАМИ -->
+                        <svg class="wheel-spinner" id="wheel-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Зелений сектор (шанс вигри) -->
+                            <path id="success-sector" d="M 110 110 L 110 10 A 100 100 0 0 1 160 23 Z" fill="#2ed573" opacity="0.9"/>
+                            
+                            <!-- Червоний сектор (шанс програшу) -->
+                            <path id="fail-sector" d="M 110 110 L 160 23 A 100 100 0 0 1 110 210 Z" fill="#ff4757" opacity="0.9"/>
+                            
+                            <!-- Зовнішній край кільця -->
+                            <circle cx="110" cy="110" r="100" fill="none" stroke="#444" stroke-width="1" opacity="0.4"/>
+                            
+                            <!-- Рисочки по периметру -->
+                            <g id="tick-marks" stroke="#666" stroke-width="1" opacity="0.6">
+                                <line x1="110" y1="8" x2="110" y2="15" />
+                                <line x1="161.5" y1="13.5" x2="165.5" y2="19.5" />
+                                <line x1="205" y1="35" x2="209" y2="40" />
+                                <line x1="200.5" y1="72" x2="207.5" y2="73" />
+                                <line x1="200" y1="110" x2="207.5" y2="110" />
+                                <line x1="200.5" y1="148" x2="207.5" y2="147" />
+                                <line x1="205" y1="185" x2="209" y2="180" />
+                                <line x1="161.5" y1="206.5" x2="165.5" y2="200.5" />
+                                <line x1="110" y1="212" x2="110" y2="205" />
+                                <line x1="58.5" y1="206.5" x2="54.5" y2="200.5" />
+                                <line x1="15" y1="185" x2="11" y2="180" />
+                                <line x1="19.5" y1="148" x2="12.5" y2="147" />
+                                <line x1="20" y1="110" x2="12.5" y2="110" />
+                                <line x1="19.5" y1="72" x2="12.5" y2="73" />
+                                <line x1="15" y1="35" x2="11" y2="40" />
+                                <line x1="58.5" y1="13.5" x2="54.5" y2="19.5" />
+                            </g>
+
+                            <!-- Внутрішнє кільце (темне) -->
+                            <circle cx="110" cy="110" r="68" fill="#0c0d12" stroke="#14151c" stroke-width="2"/>
+                        </svg>
+
+                        <!-- КРУТИЛКА СТРІЛКА -->
+                        <svg class="wheel-ticker-arrow" id="wheel-ticker" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Стрілка зверху, вказує на успіх/провал -->
+                            <g transform="translate(110, 110)">
+                                <!-- Стрілка -->
+                                <polygon points="0,-95 8,-75 -8,-75" fill="#ffd000" filter="drop-shadow(0 0 4px #ffd000)"/>
+                                <!-- Центральна точка -->
+                                <circle cx="0" cy="0" r="5" fill="#ffd000" opacity="0.8"/>
+                            </g>
+                        </svg>
+
+                        <!-- Центральний текст -->
+                        <div class="radial-center-button">
+                            <span id="chance-text">0.00%</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-action-upgrade" id="btn-fire" disabled onclick="executeUpgrade()">▲ Прокачити</button>
+                </div>
+
+                <!-- Права зона (Ціль) -->
+                <div class="drop-zone" id="target-zone" onclick="removeSelectedTargetSkin()">
+                    <div class="bg-icon">▲</div>
+                    <div class="placeholder-text" id="target-placeholder">
+                        Виберіть предмет магазину
+                    </div>
+                </div>
+            </div>
+
+            <!-- НИЖНЯ ПАНЕЛЬ: ІНВЕНТАР ТА МАГАЗИН -->
+            <div class="inventory-floor">
+                
+                <!-- ТВІЙ ІНВЕНТАР -->
+                <div class="inventory-box">
+                    <div class="box-header">📁 Мій інвентар (<span id="inv-count">0</span>)</div>
+                    <div class="inventory-grid" id="user-inventory-grid">
+                        <div class="empty-placeholder">Інвентар порожній</div>
+                    </div>
+                </div>
+
+                <!-- МАГАЗИН СКІНІВ -->
+                <div class="inventory-box">
+                    <div class="box-header"><span>🛒 Магазин</span></div>
+                    <div class="inventory-grid" id="store-inventory-grid"></div>
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
-    <div class="tabs" role="tablist" aria-label="Навігація">
-      <button class="tab active" data-tab="news" role="tab" aria-selected="true">Новини</button>
-      <button class="tab" data-tab="team" role="tab" aria-selected="false">Команда</button>
-      <button class="tab" data-tab="tournaments" role="tab" aria-selected="false">Турніри</button>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-
-  <!-- NEWS -->
-  <section class="panel active" id="panel-news" role="tabpanel">
-    <div class="hero">
-      <div>
-        <h1>Новини StarDivision</h1>
-        <p>Оновлюй новини в адмін-центрі — тут вони з’являються автоматично (нові зверху).</p>
-      </div>
-      <div class="pill"><span class="dot" aria-hidden="true"></span><span id="newsCount">0</span> News</div>
+    <!-- МОДАЛКА РЕЗУЛЬТАТУ -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <div class="m-status" id="m-title">УСПІХ</div>
+            <div id="m-body"></div>
+            <button class="m-btn" onclick="closeModal()">Закрити</button>
+        </div>
     </div>
 
-    <div class="list" id="newsList"></div>
-    <div id="newsEmpty" style="display:none;color:var(--muted);">Поки що немає новин.</div>
-  </section>
+    <script>
+        // ==========================================
+        // 🛒 НАЛАШТУВАННЯ МАГАЗИНУ
+        // ==========================================
+        const globalStoreProducts = [
+            { id: 101, name: "AK-47 | Захисна сітка (НФ)", price: 4.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/60202_b.png" },
+            { id: 102, name: "Glock-18 | AXIA (ПН)", price: 34.36, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/184796_b.png" },
+            { id: 103, name: "AK-47 | Сланец (ППИ)", price: 5.88, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/149103_b.png" },
+            { id: 104, name: "★ Нож-бабочка | Градиент", price: 144563.67, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/12474_b.png" },
+            { id: 105, name: "Desert Eagle | Декорація", price: 0.23, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/12406_b.png" },
+            { id: 106, name: "P250 | Copper Oxide", price: 0.54, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/187364_b.png" },
+            { id: 107, name: "AK-47 | Сланці", price: 42.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/149156_b.png" },
+            { id: 108, name: "AK-47 | Закалка", price: 530.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/8931_b.png" },
+            { id: 109, name: "AK-47 | Дикий лотос", price: 15000.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/145355_b.png" },
+            { id: 110, name: "Glock-18 | Зимний варіант", price: 0.25, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/156695_b.png" },
+            { id: 111, name: "Sticker | Titan Holo", price: 79866.98, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/11396_b.png" },
+            { id: 112, name: "Desert Eagle | Узбережжя", price: 391.18, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/151293_b.png" },
+            { id: 113, name: "Наклейка | Lynn Vision", price: 1.51, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/216542_b.png" },
+            { id: 114, name: "★ Перчатки мото | Коммандо", price: 45.67, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/148338_b.png" },
+        ];
 
-  <!-- TEAM -->
-  <section class="panel" id="panel-team" role="tabpanel">
-    <div class="hero">
-      <div>
-        <h1>Команда</h1>
-        <p>Ніки, ролі та фото беруться з адмін-центра. Міняй — і тут оновиться.</p>
-      </div>
-      <div class="pill"><span class="dot" aria-hidden="true"></span><span id="teamCount">0</span> Players</div>
-    </div>
+        // ==========================================
+        // 📁 СТАРТОВИЙ ІНВЕНТАР
+        // ==========================================
+        let userInventory = [
+            { id: 1, name: "AK-47 | Захисна сітка (НФ)", price: 4.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/60202_b.png" },
+        ];
 
-    <div class="grid" id="teamGrid"></div>
-  </section>
+        let userBalance = 550.00;
+        let selectedUserSkin = null;
+        let selectedTargetSkin = null;
+        let activeUpgradeChance = 0;
+        let isUpgrading = false;
 
-  <!-- TOURNAMENTS -->
-  <section class="panel" id="panel-tournaments" role="tabpanel">
-    <div class="hero">
-      <div>
-        <h1>Турніри</h1>
-        <p>Турніри зберігаються і накопичуються. Натисни “Відкрити”, щоб побачити деталі.</p>
-      </div>
-      <div class="pill"><span class="dot" aria-hidden="true"></span><span id="tourCount">0</span> Tours</div>
-    </div>
+        window.onload = function() {
+            renderUserInventory();
+            renderStore();
+            renderLiveFeed();
+            updateBalanceUI();
+        };
 
-    <div class="list" id="tourList"></div>
-    <div id="tourEmpty" style="display:none;color:var(--muted);">Поки що немає турнірів.</div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="wrap">© <span id="year"></span> StarEsport.eu</div>
-</footer>
-
-<dialog id="tourDialog">
-  <div class="dlg-head">
-    <h2 id="dlgTitle">Турнір</h2>
-    <button class="btn" id="dlgClose">Закрити</button>
-  </div>
-  <div class="dlg-body">
-    <div class="bigimg" id="dlgCoverWrap"><img id="dlgCover" alt="Обкладинка турніру"></div>
-    <div class="bigimg" id="dlgBracketWrap"><img id="dlgBracket" alt="Сітка турніру"></div>
-    <div class="dlg-meta" id="dlgMeta"></div>
-  </div>
-</dialog>
-
-<script>
-  // =========================
-  // CONNECT TO ADMIN STORAGE
-  // =========================
-  const STORAGE_KEY = "staresport_data_v1";
-
-  function uid(){
-    if (crypto?.randomUUID) return crypto.randomUUID();
-    return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
-  }
-
-  // Мінімальний дефолт, якщо localStorage пустий (але адмін зазвичай вже створює дані)
-  const defaultData = {
-    players: [
-      { id: uid(), nickname: "Robo", role: "Rifler", photoDataUrl: "" },
-      { id: uid(), nickname: "Zeus", role: "Capitan", photoDataUrl: "" },
-      { id: uid(), nickname: "JL", role: "Suport", photoDataUrl: "" },
-      { id: uid(), nickname: "SeWa", role: "Rifler", photoDataUrl: "" },
-      { id: uid(), nickname: "Lattyk", role: "AWP", photoDataUrl: "" },
-    ],
-    news: [],
-    tournaments: []
-  };
-
-  function loadData(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw){
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-        return structuredClone(defaultData);
-      }
-      const data = JSON.parse(raw);
-
-      // Міграції/гарантії
-      if(!Array.isArray(data.players)) data.players = [];
-      if(!Array.isArray(data.news)) data.news = [];
-      if(!Array.isArray(data.tournaments)) data.tournaments = [];
-
-      if(data.players.length < 5){
-        const need = 5 - data.players.length;
-        for(let i=0;i<need;i++){
-          data.players.push({ id: uid(), nickname: "StarPlayer" + (data.players.length+1), role:"Player", photoDataUrl:"" });
+        function updateBalanceUI() {
+            document.getElementById('balance-amount').innerText = userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      return data;
-    }catch(e){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-      return structuredClone(defaultData);
-    }
-  }
 
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[c]));
-  }
+        function depositMoney() {
+            if (isUpgrading) return;
+            userBalance += 50;
+            updateBalanceUI();
+        }
 
-  function formatDate(iso){
-    if(!iso) return "—";
-    try{
-      const d = new Date(iso);
-      return d.toLocaleString("uk-UA", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }catch{ return "—"; }
-  }
+        function renderUserInventory() {
+            const grid = document.getElementById('user-inventory-grid');
+            document.getElementById('inv-count').innerText = userInventory.length;
+            
+            if (userInventory.length === 0) {
+                grid.innerHTML = '<div class="empty-placeholder">Інвентар порожній</div>';
+                return;
+            }
 
-  // =========================
-  // RENDER
-  // =========================
-  function renderTeam(players){
-    const grid = document.getElementById("teamGrid");
-    grid.innerHTML = "";
-    document.getElementById("teamCount").textContent = String(players.length);
+            grid.innerHTML = '';
+            userInventory.forEach((skin, index) => {
+                const card = document.createElement('div');
+                card.className = 'skin-card';
+                card.innerHTML = `
+                    <div class="card-name">${skin.name}</div>
+                    <div class="skin-img-wrapper"><img src="${skin.img}"></div>
+                    <div class="card-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                `;
+                card.onclick = () => selectUserSkin(skin, index);
+                grid.appendChild(card);
+            });
+        }
 
-    players.forEach(p=>{
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="player-thumb">
-          ${p.photoDataUrl ? `<img src="${p.photoDataUrl}" alt="Фото ${escapeHtml(p.nickname)}">` : `Нема фото`}
-        </div>
-        <div class="card-body">
-          <div class="name">${escapeHtml(p.nickname || "Player")}</div>
-          <div class="meta">${escapeHtml(p.role || "Гравець")}</div>
-          <div class="tag">StarDivision</div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-  }
+        function renderStore() {
+            const grid = document.getElementById('store-inventory-grid');
+            grid.innerHTML = '';
 
-  function renderNews(news){
-    const list = document.getElementById("newsList");
-    const empty = document.getElementById("newsEmpty");
-    list.innerHTML = "";
+            globalStoreProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'skin-card';
+                card.innerHTML = `
+                    <div class="card-name">${product.name}</div>
+                    <div class="skin-img-wrapper"><img src="${product.img}"></div>
+                    <div class="card-price">$${product.price.toLocaleString('en-US', {minimumFractionDigits: product.price > 1000 ? 0 : 2})}</div>
+                    <button class="btn-buy-skin" onclick="buySkinFromStore(event, ${product.id})">Купити</button>
+                `;
+                card.onclick = () => selectTargetSkin(product);
+                grid.appendChild(card);
+            });
+        }
 
-    const sorted = [...news].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
-    document.getElementById("newsCount").textContent = String(sorted.length);
+        function buySkinFromStore(event, productId) {
+            event.stopPropagation();
+            if (isUpgrading) return;
+            const product = globalStoreProducts.find(p => p.id === productId);
+            
+            if (userBalance < product.price) {
+                alert("Недостатньо балансу!");
+                return;
+            }
 
-    if(sorted.length === 0){
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
+            userBalance -= product.price;
+            updateBalanceUI();
 
-    sorted.forEach(n=>{
-      const card = document.createElement("div");
-      card.className = "card news";
-      const cover = n.photoDataUrl
-        ? `<div class="news-cover"><img src="${n.photoDataUrl}" alt="Фото новини"></div>`
-        : `<div class="news-cover" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;">Нема фото</div>`;
-      card.innerHTML = `
-        ${cover}
-        <div>
-          <h3>${escapeHtml(n.title || "Без заголовка")}</h3>
-          <div class="date">Опубліковано: ${formatDate(n.createdAt)}</div>
-          <div class="text">${escapeHtml(n.text || "")}</div>
-        </div>
-      `;
-      list.appendChild(card);
-    });
-  }
+            userInventory.push({
+                id: Date.now(),
+                name: product.name,
+                price: product.price,
+                img: product.img
+            });
 
-  function renderTournaments(tournaments){
-    const list = document.getElementById("tourList");
-    const empty = document.getElementById("tourEmpty");
-    list.innerHTML = "";
+            renderUserInventory();
+        }
 
-    const sorted = [...tournaments].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
-    document.getElementById("tourCount").textContent = String(sorted.length);
+        function selectUserSkin(skin, index) {
+            if (isUpgrading) return;
+            selectedUserSkin = { ...skin, indexInInv: index };
+            const zone = document.getElementById('user-zone');
+            zone.innerHTML = `
+                <div class="selected-skin-inner">
+                    <img src="${skin.img}">
+                    <div class="s-name">${skin.name}</div>
+                    <div class="s-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                </div>
+            `;
+            calculateUpgradeOdds();
+        }
 
-    if(sorted.length === 0){
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
+        function selectTargetSkin(skin) {
+            if (isUpgrading) return;
+            if (selectedUserSkin && skin.price <= selectedUserSkin.price) {
+                alert("Ціль повинна бути дорожчою!");
+                return;
+            }
+            selectedTargetSkin = skin;
+            const zone = document.getElementById('target-zone');
+            zone.innerHTML = `
+                <div class="selected-skin-inner">
+                    <img src="${skin.img}">
+                    <div class="s-name">${skin.name}</div>
+                    <div class="s-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: skin.price > 1000 ? 0 : 2})}</div>
+                </div>
+            `;
+            calculateUpgradeOdds();
+        }
 
-    sorted.forEach(t=>{
-      const card = document.createElement("div");
-      card.className = "card tour";
-      const cover = t.coverDataUrl
-        ? `<div class="tour-cover"><img src="${t.coverDataUrl}" alt="Обкладинка"></div>`
-        : `<div class="tour-cover">Нема cover</div>`;
-      card.innerHTML = `
-        ${cover}
-        <div>
-          <h3>${escapeHtml(t.title || "Турнір")}</h3>
-          <p>Додано: ${formatDate(t.createdAt)}</p>
-          <div class="row">
-            <button class="btn" data-open="${t.id}">Відкрити</button>
-          </div>
-        </div>
-      `;
-      list.appendChild(card);
-    });
+        function removeSelectedUserSkin() {
+            if (isUpgrading) return;
+            selectedUserSkin = null;
+            document.getElementById('user-zone').innerHTML = '<div class="bg-icon">▲</div><div class="placeholder-text">Виберіть скін нижче</div>';
+            calculateUpgradeOdds();
+        }
 
-    list.querySelectorAll("[data-open]").forEach(btn=>{
-      btn.addEventListener("click", ()=>openTournament(btn.dataset.open));
-    });
-  }
+        function removeSelectedTargetSkin() {
+            if (isUpgrading) return;
+            selectedTargetSkin = null;
+            document.getElementById('target-zone').innerHTML = '<div class="bg-icon">▲</div><div class="placeholder-text">Виберіть предмет магазину</div>';
+            calculateUpgradeOdds();
+        }
 
-  // =========================
-  // Tournament dialog
-  // =========================
-  function openTournament(id){
-    const data = loadData();
-    const t = data.tournaments.find(x=>x.id===id);
-    if(!t) return;
+        function calculateUpgradeOdds() {
+            if (!selectedUserSkin || !selectedTargetSkin) {
+                document.getElementById('chance-text').innerText = '0.00%';
+                document.getElementById('btn-fire').disabled = true;
+                updateWheelSectors(0);
+                return;
+            }
 
-    const dlg = document.getElementById("tourDialog");
-    document.getElementById("dlgTitle").textContent = t.title || "Турнір";
-    document.getElementById("dlgMeta").textContent = `ID: ${t.id} • Додано: ${formatDate(t.createdAt)}`;
+            activeUpgradeChance = (selectedUserSkin.price / selectedTargetSkin.price) * 100;
+            if (activeUpgradeChance > 100) activeUpgradeChance = 100;
 
-    const coverWrap = document.getElementById("dlgCoverWrap");
-    const bracketWrap = document.getElementById("dlgBracketWrap");
-    const cover = document.getElementById("dlgCover");
-    const bracket = document.getElementById("dlgBracket");
+            document.getElementById('chance-text').innerText = `${activeUpgradeChance.toFixed(2)}%`;
+            document.getElementById('btn-fire').disabled = false;
+            updateWheelSectors(activeUpgradeChance);
+        }
 
-    if(t.coverDataUrl){
-      cover.src = t.coverDataUrl + "#v=" + Date.now();
-      coverWrap.style.display = "block";
-    }else{
-      coverWrap.style.display = "none";
-      cover.src = "";
-    }
+        function updateWheelSectors(successChance) {
+            const successDegrees = (successChance / 100) * 360;
+            
+            const successSector = document.getElementById('success-sector');
+            const failSector = document.getElementById('fail-sector');
 
-    if(t.bracketDataUrl){
-      bracket.src = t.bracketDataUrl + "#v=" + Date.now();
-      bracketWrap.style.display = "block";
-    }else{
-      bracketWrap.style.display = "none";
-      bracket.src = "";
-    }
+            if (successChance === 0) {
+                successSector.style.display = 'none';
+                failSector.setAttribute('d', 'M 110 110 L 110 10 A 100 100 0 1 1 109.99 10 Z');
+            } else if (successChance >= 100) {
+                failSector.style.display = 'none';
+                successSector.setAttribute('d', 'M 110 110 L 110 10 A 100 100 0 1 1 109.99 10 Z');
+            } else {
+                successSector.style.display = 'block';
+                failSector.style.display = 'block';
 
-    dlg.showModal();
-  }
+                const angle = (successDegrees * Math.PI) / 180;
+                const x2 = 110 + 100 * Math.sin(angle);
+                const y2 = 110 - 100 * Math.cos(angle);
 
-  document.getElementById("dlgClose").addEventListener("click", ()=>{
-    document.getElementById("tourDialog").close();
-  });
+                const largeArc = successDegrees > 180 ? 1 : 0;
 
-  // =========================
-  // Tabs
-  // =========================
-  const tabs = document.querySelectorAll(".tab");
-  const panels = {
-    news: document.getElementById("panel-news"),
-    team: document.getElementById("panel-team"),
-    tournaments: document.getElementById("panel-tournaments")
-  };
+                successSector.setAttribute('d', `M 110 110 L 110 10 A 100 100 0 ${largeArc} 1 ${x2} ${y2} Z`);
 
-  function setTab(name){
-    tabs.forEach(t=>{
-      const active = t.dataset.tab === name;
-      t.classList.toggle("active", active);
-      t.setAttribute("aria-selected", active ? "true" : "false");
-    });
-    Object.keys(panels).forEach(k=>{
-      panels[k].classList.toggle("active", k === name);
-    });
-  }
+                const failLargeArc = successDegrees <= 180 ? 1 : 0;
+                failSector.setAttribute('d', `M 110 110 L ${x2} ${y2} A 100 100 0 ${failLargeArc} 1 110 10 Z`);
+            }
+        }
 
-  tabs.forEach(t=>{
-    t.addEventListener("click", ()=>setTab(t.dataset.tab));
-  });
+        function executeUpgrade() {
+            if (!selectedUserSkin || !selectedTargetSkin || isUpgrading) return;
+            
+            isUpgrading = true;
+            document.getElementById('btn-fire').disabled = true;
 
-  // =========================
-  // Init + Sync with Admin
-  // =========================
-  document.getElementById("year").textContent = new Date().getFullYear();
+            const finalRollDegree = Math.random() * 360;
+            const totalRotations = 4;
+            const finalTargetDegrees = (totalRotations * 360) + finalRollDegree;
 
-  function rerender(){
-    const data = loadData();
-    renderNews(data.news);
-    renderTeam(data.players);
-    renderTournaments(data.tournaments);
-  }
+            const wheelTicker = document.getElementById('wheel-ticker');
+            wheelTicker.style.setProperty('--final-rotation', finalTargetDegrees + 'deg');
+            wheelTicker.classList.add('spinning');
 
-  rerender();
+            setTimeout(() => {
+                const winAreaDegrees = (activeUpgradeChance / 100) * 360;
+                const isWinner = finalRollDegree <= winAreaDegrees;
+                
+                determineOutcome(isWinner);
+                wheelTicker.classList.remove('spinning');
+            }, 3000);
+        }
 
-  // Оновлення при зміні в іншій вкладці
-  window.addEventListener("storage", (e)=>{
-    if(e.key === STORAGE_KEY) rerender();
-  });
+        function determineOutcome(isWinner) {
+            const modal = document.getElementById('result-modal');
+            const title = document.getElementById('m-title');
+            const body = document.getElementById('m-body');
 
-  // Надійне автооновлення (якщо браузер не дає storage івент або ти швидко правиш)
-  setInterval(rerender, 1200);
+            if (isWinner) {
+                title.innerText = "УСПІХ!";
+                title.className = "m-status m-success";
+                body.innerHTML = `
+                    <p style="margin-bottom: 10px;">Ви отримали:</p>
+                    <img src="${selectedTargetSkin.img}" style="height:80px; margin: 10px 0;">
+                    <p style="font-weight:700; font-size: 13px; margin-top: 10px;">${selectedTargetSkin.name}</p>
+                    <p style="color: var(--accent-yellow); font-size: 14px;">$${selectedTargetSkin.price.toLocaleString('en-US')}</p>
+                `;
 
-  // Стартова вкладка: Новини
-  setTab("news");
-</script>
+                userInventory.splice(selectedUserSkin.indexInInv, 1, {
+                    id: Date.now(),
+                    name: selectedTargetSkin.name,
+                    price: selectedTargetSkin.price,
+                    img: selectedTargetSkin.img
+                });
 
+            } else {
+                title.innerText = "ПРОВАЛ!";
+                title.className = "m-status m-fail";
+                body.innerHTML = `
+                    <p style="margin-bottom: 10px;">Ваш предмет згорів</p>
+                    <img src="${selectedUserSkin.img}" style="height:80px; margin: 10px 0; opacity: 0.15; filter: grayscale(100%);">
+                    <p style="color:var(--text-gray); font-size:12px; margin-top: 10px;">${selectedUserSkin.name} втрачено</p>
+                `;
+
+                userInventory.splice(selectedUserSkin.indexInInv, 1);
+            }
+
+            renderUserInventory();
+            removeSelectedUserSkin();
+            removeSelectedTargetSkin();
+            modal.classList.add('active');
+            renderLiveFeed();
+            
+            isUpgrading = false;
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').classList.remove('active');
+        }
+
+        function renderLiveFeed() {
+            const sidebar = document.getElementById('live-sidebar');
+            sidebar.innerHTML = '';
+            for(let i = 0; i < 10; i++) {
+                const randomItem = globalStoreProducts[Math.floor(Math.random() * globalStoreProducts.length)];
+                const div = document.createElement('div');
+                div.className = 'sidebar-item';
+                div.innerHTML = `
+                    <img src="${randomItem.img}">
+                    <div style="font-size: 8px;">${randomItem.name.substring(0, 15)}</div>
+                `;
+                sidebar.appendChild(div);
+            }
+        }
+    </script>
 </body>
 </html>
