@@ -14,6 +14,8 @@
             --text-white: #ffffff;
             --text-gray: #787d91;
             --border-color: #222530;
+            --steam-blue: #171a21;
+            --steam-light: #66c0f4;
         }
 
         * {
@@ -92,13 +94,23 @@
             border-radius: 6px;
             border: 1px solid var(--border-color);
             font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        .user-profile-block:hover {
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 10px rgba(255, 208, 0, 0.15);
         }
 
         .user-avatar {
             width: 28px; height: 28px;
-            border-radius: 4px;
+            border-radius: 50%;
             background: var(--accent-yellow);
             flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+            background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii');
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .user-balance {
@@ -399,6 +411,202 @@
             transform: scale(0.95);
         }
 
+        .btn-sell-skin {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 3px 0;
+            border-radius: 3px;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+        .btn-sell-skin:active {
+            transform: scale(0.95);
+        }
+
+        /* Модалка продажу */
+        .modal-sell {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-sell.active { opacity: 1; pointer-events: auto; }
+        .modal-sell-content {
+            background: var(--bg-panel); padding: 25px; border-radius: 12px;
+            border: 1px solid var(--border-color); text-align: center; max-width: 90%; width: 100%;
+        }
+        .sell-title {
+            font-size: 16px; font-weight: 900; margin-bottom: 15px; color: #fff;
+        }
+        .sell-image {
+            height: 80px; margin: 15px 0; object-fit: contain;
+        }
+        .sell-name {
+            font-weight: 700; font-size: 13px; margin: 10px 0;
+        }
+        .sell-info {
+            background: var(--bg-card); padding: 12px; border-radius: 8px; margin: 15px 0;
+            border: 1px solid var(--border-color);
+        }
+        .sell-price-row {
+            display: flex; justify-content: space-between; margin: 8px 0;
+            font-size: 12px;
+        }
+        .sell-price-row.total {
+            font-weight: 700; font-size: 14px; color: #2ed573;
+            border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 8px;
+        }
+        .sell-buttons {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+        .sell-buttons button {
+            flex: 1; padding: 12px; border: none; font-weight: 700; 
+            border-radius: 4px; cursor: pointer; font-size: 13px;
+        }
+        .btn-confirm-sell {
+            background: #2ed573; color: black;
+        }
+        .btn-cancel-sell {
+            background: #222530; color: var(--text-gray);
+        }
+        .btn-confirm-sell:active {
+            transform: scale(0.98);
+        }
+        .btn-cancel-sell:active {
+            transform: scale(0.98);
+        }
+
+        /* --- ПРОКАЧАНА МОДАЛКА ПРОФІЛЮ КОРИСТУВАЧА --- */
+        .modal-profile {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 6, 10, 0.9);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 101; opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-profile.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-profile-content {
+            background: var(--bg-panel); 
+            padding: 28px 24px; 
+            border-radius: 16px;
+            border: 1px solid rgba(255, 208, 0, 0.2); 
+            max-width: 92%; 
+            width: 390px; 
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(255, 208, 0, 0.05);
+            position: relative;
+        }
+        .profile-title {
+            font-size: 18px; font-weight: 900; margin-bottom: 22px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        
+        /* Прогресивна зона завантаження аватара */
+        .avatar-uploader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+        .profile-avatar-current {
+            width: 84px; height: 84px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii');
+            border: 3px solid var(--accent-yellow);
+            box-shadow: 0 0 15px rgba(255, 208, 0, 0.3);
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+        .profile-avatar-current:hover {
+            transform: scale(1.03);
+        }
+        
+        .btn-upload-label {
+            background: var(--bg-card);
+            border: 1px dashed rgba(255, 208, 0, 0.5);
+            color: #fff;
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-upload-label:hover {
+            background: rgba(255, 208, 0, 0.1);
+            border-color: var(--accent-yellow);
+        }
+        #avatar-file-input {
+            display: none;
+        }
+
+        .profile-stats-grid {
+            background: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: 10px; 
+            padding: 16px; 
+            margin-bottom: 22px; 
+            text-align: left;
+        }
+        .p-stat-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 12px; 
+            font-size: 13px; 
+            color: var(--text-gray);
+        }
+        .p-stat-row:last-child { margin-bottom: 0; }
+        .p-stat-val { font-weight: 700; color: #fff; }
+        .p-best-skin { 
+            color: var(--accent-yellow); 
+            max-width: 170px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            text-align: right; 
+            font-weight: 800;
+        }
+        
+        /* Геймерська Steam кнопка */
+        .btn-steam-withdraw {
+            width: 100%; 
+            background: linear-gradient(135deg, #101216 0%, #171a21 100%); 
+            color: #66c0f4; 
+            border: 1px solid rgba(102, 192, 244, 0.4); 
+            padding: 14px; 
+            font-weight: 800; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            transition: 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .btn-steam-withdraw:hover:not(:disabled) { 
+            background: linear-gradient(135deg, #171a21 0%, #232835 100%);
+            border-color: #66c0f4;
+            box-shadow: 0 0 15px rgba(102, 192, 244, 0.25);
+            color: #fff;
+        }
+        .btn-steam-withdraw:disabled { 
+            opacity: 0.4; 
+            cursor: not-allowed; 
+            border-color: var(--border-color);
+            color: var(--text-gray);
+        }
+
         .empty-placeholder {
             display: flex;
             align-items: center;
@@ -427,7 +635,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
             display: flex; align-items: center; justify-content: center;
-            z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s;
+            z-index: 120; opacity: 0; pointer-events: none; transition: 0.3s;
         }
         .modal.active { opacity: 1; pointer-events: auto; }
         .modal-content {
@@ -601,13 +809,13 @@
             </div>
         </div>
         <div class="header-right">
-            <div class="user-profile-block">
-                <div class="user-avatar"></div>
+            <div class="user-profile-block" onclick="openProfileModal()">
+                <div class="user-avatar" id="header-avatar"></div>
                 <div>
                     <div style="font-size: 10px; color: var(--text-gray);">Баланс</div>
                     <div class="user-balance">$<span id="balance-amount">550.0</span></div>
                 </div>
-                <button class="btn-add-funds" onclick="depositMoney()">+$50</button>
+                <button class="btn-add-funds" onclick="depositMoney(event)">+$50</button>
             </div>
         </div>
     </header>
@@ -718,6 +926,69 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА ПРОДАЖУ -->
+    <div class="modal-sell" id="sell-modal">
+        <div class="modal-sell-content">
+            <div class="sell-title">ПРОДАТИ СКІН</div>
+            <img id="sell-image" class="sell-image" src="">
+            <div class="sell-name" id="sell-name"></div>
+            
+            <div class="sell-info">
+                <div class="sell-price-row">
+                    <span>Ціна скіна:</span>
+                    <span id="sell-price" style="color: var(--accent-yellow);">$0.00</span>
+                </div>
+                <div class="sell-price-row">
+                    <span>Комісія (4%):</span>
+                    <span id="sell-commission" style="color: #ff6b6b;">-$0.00</span>
+                </div>
+                <div class="sell-price-row total">
+                    <span>Ви отримаєте:</span>
+                    <span id="sell-total" style="color: #2ed573;">$0.00</span>
+                </div>
+            </div>
+
+            <div class="sell-buttons">
+                <button class="btn-confirm-sell" onclick="confirmSellSkin()">Продати</button>
+                <button class="btn-cancel-sell" onclick="closeSellModal()">Скасувати</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРОКАЧАНА МОДАЛКА ПРОФІЛЮ З СПРАВЖНІМ ЗАВАНТАЖЕННЯМ ФОТО -->
+    <div class="modal-profile" id="profile-modal" onclick="closeProfileModalOutside(event)">
+        <div class="modal-profile-content">
+            <div class="profile-title">Мій профіль</div>
+            
+            <!-- Робоче завантаження аватарки з пристрою -->
+            <div class="avatar-uploader-container">
+                <div class="profile-avatar-current" id="profile-avatar-display"></div>
+                <label for="avatar-file-input" class="btn-upload-label">
+                    📷 Вибрати фото з телефону
+                </label>
+                <input type="file" id="avatar-file-input" accept="image/*" onchange="loadAvatarFromDevice(event)">
+            </div>
+            
+            <div class="profile-stats-grid">
+                <div class="p-stat-row">
+                    <span>Усього предметів:</span>
+                    <span class="p-stat-val" id="p-stat-count">0</span>
+                </div>
+                <div class="p-stat-row">
+                    <span>Вартість інвентарю:</span>
+                    <span class="p-stat-val" id="p-stat-worth">$0.00</span>
+                </div>
+                <div class="p-stat-row">
+                    <span>Найкращий апгрейд:</span>
+                    <span class="p-stat-val p-best-skin" id="p-stat-best">Немає</span>
+                </div>
+            </div>
+
+            <button class="btn-steam-withdraw" id="btn-steam-action" onclick="withdrawToSteam()">Вивести скіни на Steam</button>
+            <button class="m-btn" style="width: 100%; margin-top: 12px; background: #222530; color: var(--text-gray);" onclick="closeProfileModal()">Закрити</button>
+        </div>
+    </div>
+
     <!-- МОДАЛКА РЕЗУЛЬТАТУ -->
     <div class="modal" id="result-modal">
         <div class="modal-content">
@@ -760,19 +1031,26 @@
         let selectedTargetSkin = null;
         let activeUpgradeChance = 0;
         let isUpgrading = false;
+        let skinToSellIndex = null;
 
         window.onload = function() {
             renderUserInventory();
             renderStore();
             renderLiveFeed();
             updateBalanceUI();
+            
+            // Встановлюємо дефолтний красивий аватар для старту
+            const startAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii";
+            document.getElementById('header-avatar').style.backgroundImage = `url('${startAvatarUrl}')`;
+            document.getElementById('profile-avatar-display').style.backgroundImage = `url('${startAvatarUrl}')`;
         };
 
         function updateBalanceUI() {
             document.getElementById('balance-amount').innerText = userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function depositMoney() {
+        function depositMoney(event) {
+            if (event) event.stopPropagation();
             if (isUpgrading) return;
             userBalance += 50;
             updateBalanceUI();
@@ -795,6 +1073,7 @@
                     <div class="card-name">${skin.name}</div>
                     <div class="skin-img-wrapper"><img src="${skin.img}"></div>
                     <div class="card-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                    <button class="btn-sell-skin" onclick="openSellModal(event, ${index})">Продати</button>
                 `;
                 card.onclick = () => selectUserSkin(skin, index);
                 grid.appendChild(card);
@@ -1016,6 +1295,149 @@
                 `;
                 sidebar.appendChild(div);
             }
+        }
+
+        // ==========================================
+        // 💰 ФУНКЦІОНАЛ ПРОДАЖУ СКІНІВ
+        // ==========================================
+        function openSellModal(event, index) {
+            event.stopPropagation();
+            if (isUpgrading) return;
+            
+            skinToSellIndex = index;
+            const skin = userInventory[index];
+            
+            const price = skin.price;
+            const commission = price * 0.04;
+            const total = price - commission;
+
+            document.getElementById('sell-image').src = skin.img;
+            document.getElementById('sell-name').innerText = skin.name;
+            document.getElementById('sell-price').innerText = `$${price.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('sell-commission').innerText = `-$${commission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('sell-total').innerText = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+            document.getElementById('sell-modal').classList.add('active');
+        }
+
+        function closeSellModal() {
+            document.getElementById('sell-modal').classList.remove('active');
+            skinToSellIndex = null;
+        }
+
+        function confirmSellSkin() {
+            if (skinToSellIndex === null) return;
+            
+            const skin = userInventory[skinToSellIndex];
+            const price = skin.price;
+            const commission = price * 0.04;
+            const totalGain = price - commission;
+
+            userBalance += totalGain;
+            updateBalanceUI();
+
+            if (selectedUserSkin && selectedUserSkin.indexInInv === skinToSellIndex) {
+                removeSelectedUserSkin();
+            }
+
+            userInventory.splice(skinToSellIndex, 1);
+            
+            renderUserInventory();
+            closeSellModal();
+        }
+
+        // ==========================================
+        // 👤 ФУНКЦІОНАЛ ПРОФІЛЮ КОРИСТУВАЧА
+        // ==========================================
+        function openProfileModal() {
+            if (isUpgrading) return;
+
+            let totalWorth = 0;
+            let bestSkin = null;
+
+            userInventory.forEach(skin => {
+                totalWorth += skin.price;
+                if (!bestSkin || skin.price > bestSkin.price) {
+                    bestSkin = skin;
+                }
+            });
+
+            document.getElementById('p-stat-count').innerText = userInventory.length;
+            document.getElementById('p-stat-worth').innerText = `$${totalWorth.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('p-stat-best').innerText = bestSkin ? `${bestSkin.name} ($${bestSkin.price.toLocaleString('en-US')})` : "Немає";
+            
+            const btnWithdraw = document.getElementById('btn-steam-action');
+            if (userInventory.length === 0) {
+                btnWithdraw.disabled = true;
+                btnWithdraw.innerText = "Немає скінів для виведення";
+            } else {
+                btnWithdraw.disabled = false;
+                btnWithdraw.innerText = "Вивести скіни на Steam";
+            }
+
+            document.getElementById('profile-modal').classList.add('active');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.remove('active');
+        }
+
+        function closeProfileModalOutside(event) {
+            if (event.target === document.getElementById('profile-modal')) {
+                closeProfileModal();
+            }
+        }
+
+        // СПРАВЖНЄ ЗАВАНТАЖЕННЯ АВАТАРКИ З ПРИСТРОЮ ТЕЛЕФОНУ
+        function loadAvatarFromDevice(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    
+                    // Оновлюємо аватарку в профілі та в шапці одночасно
+                    document.getElementById('profile-avatar-display').style.backgroundImage = `url('${imageUrl}')`;
+                    document.getElementById('header-avatar').style.backgroundImage = `url('${imageUrl}')`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function withdrawToSteam() {
+            if (userInventory.length === 0) return;
+
+            const btnWithdraw = document.getElementById('btn-steam-action');
+            btnWithdraw.disabled = true;
+            btnWithdraw.innerText = "З'єднання зі Steam...";
+
+            setTimeout(() => {
+                btnWithdraw.innerText = "Надсилання пропозиції обміну...";
+                
+                setTimeout(() => {
+                    closeProfileModal();
+                    
+                    const modal = document.getElementById('result-modal');
+                    const title = document.getElementById('m-title');
+                    const body = document.getElementById('m-body');
+
+                    title.innerText = "ОБМІН НАДІСЛАНО!";
+                    title.className = "m-status m-success";
+                    body.innerHTML = `
+                        <p style="margin-bottom: 10px;">Усі скіни успішно відправлені на ваш аккаунт.</p>
+                        <div style="background: #171a21; border-radius: 6px; padding: 12px; margin: 15px 0; border: 1px solid #66c0f4; color: #66c0f4; font-size: 12px; font-weight: bold;">
+                            Перевірте ваші мобільні підтвердження Steam Guard!
+                        </div>
+                    `;
+
+                    userInventory = [];
+                    renderUserInventory();
+                    removeSelectedUserSkin();
+                    
+                    modal.classList.add('active');
+                }, 1500);
+
+            }, 1500);
         }
     </script>
 </body>
