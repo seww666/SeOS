@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>UPGRADER - Один в один як у Фігмі</title>
+    <title>UPGRADER - SeWa</title>
     <style>
         :root {
             --bg-main: #0c0d12;
@@ -799,7 +799,6 @@
 </head>
 <body>
 
-    <!-- ХЕДЕР -->
     <header>
         <div class="header-left">
             <div class="logo">▲ UPGRADER<span></span></div>
@@ -821,15 +820,11 @@
     </header>
 
     <div class="wrapper">
-        <!-- ЛІВИЙ САЙДБАР -->
         <div class="sidebar" id="live-sidebar"></div>
 
-        <!-- РОБОЧА ЗОНА -->
         <div class="main-workspace">
             
-            <!-- ВЕРХНЯ ПАНЕЛЬ -->
             <div class="upgrade-floor">
-                <!-- Ліва зона (Твій скін) -->
                 <div class="drop-zone" id="user-zone" onclick="removeSelectedUserSkin()">
                     <div class="bg-icon">▲</div>
                     <div class="placeholder-text" id="user-placeholder">
@@ -837,21 +832,15 @@
                     </div>
                 </div>
 
-                <!-- Центр (Перероблена крутилка) -->
                 <div class="center-wheel-area">
                     <div class="wheel-container">
-                        <!-- СТАТИЧНИЙ КРУГ З СЕКТОРАМИ -->
                         <svg class="wheel-spinner" id="wheel-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Зелений сектор (шанс вигри) -->
                             <path id="success-sector" d="M 110 110 L 110 10 A 100 100 0 0 1 160 23 Z" fill="#2ed573" opacity="0.9"/>
                             
-                            <!-- Червоний сектор (шанс програшу) -->
                             <path id="fail-sector" d="M 110 110 L 160 23 A 100 100 0 0 1 110 210 Z" fill="#ff4757" opacity="0.9"/>
                             
-                            <!-- Зовнішній край кільця -->
                             <circle cx="110" cy="110" r="100" fill="none" stroke="#444" stroke-width="1" opacity="0.4"/>
                             
-                            <!-- Рисочки по периметру -->
                             <g id="tick-marks" stroke="#666" stroke-width="1" opacity="0.6">
                                 <line x1="110" y1="8" x2="110" y2="15" />
                                 <line x1="161.5" y1="13.5" x2="165.5" y2="19.5" />
@@ -871,22 +860,16 @@
                                 <line x1="58.5" y1="13.5" x2="54.5" y2="19.5" />
                             </g>
 
-                            <!-- Внутрішнє кільце (темне) -->
                             <circle cx="110" cy="110" r="68" fill="#0c0d12" stroke="#14151c" stroke-width="2"/>
                         </svg>
 
-                        <!-- КРУТИЛКА СТРІЛКА -->
                         <svg class="wheel-ticker-arrow" id="wheel-ticker" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Стрілка зверху, вказує на успіх/провал -->
                             <g transform="translate(110, 110)">
-                                <!-- Стрілка -->
                                 <polygon points="0,-95 8,-75 -8,-75" fill="#ffd000" filter="drop-shadow(0 0 4px #ffd000)"/>
-                                <!-- Центральна точка -->
                                 <circle cx="0" cy="0" r="5" fill="#ffd000" opacity="0.8"/>
                             </g>
                         </svg>
 
-                        <!-- Центральний текст -->
                         <div class="radial-center-button">
                             <span id="chance-text">0.00%</span>
                         </div>
@@ -895,7 +878,6 @@
                     <button class="btn-action-upgrade" id="btn-fire" disabled onclick="executeUpgrade()">▲ Прокачити</button>
                 </div>
 
-                <!-- Права зона (Ціль) -->
                 <div class="drop-zone" id="target-zone" onclick="removeSelectedTargetSkin()">
                     <div class="bg-icon">▲</div>
                     <div class="placeholder-text" id="target-placeholder">
@@ -904,10 +886,8 @@
                 </div>
             </div>
 
-            <!-- НИЖНЯ ПАНЕЛЬ: ІНВЕНТАР ТА МАГАЗИН -->
             <div class="inventory-floor">
                 
-                <!-- ТВІЙ ІНВЕНТАР -->
                 <div class="inventory-box">
                     <div class="box-header">📁 Мій інвентар (<span id="inv-count">0</span>)</div>
                     <div class="inventory-grid" id="user-inventory-grid">
@@ -915,7 +895,6 @@
                     </div>
                 </div>
 
-                <!-- МАГАЗИН СКІНІВ -->
                 <div class="inventory-box">
                     <div class="box-header"><span>🛒 Магазин</span></div>
                     <div class="inventory-grid" id="store-inventory-grid"></div>
@@ -926,7 +905,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПРОДАЖУ -->
     <div class="modal-sell" id="sell-modal">
         <div class="modal-sell-content">
             <div class="sell-title">ПРОДАТИ СКІН</div>
@@ -955,12 +933,10 @@
         </div>
     </div>
 
-    <!-- ПРОКАЧАНА МОДАЛКА ПРОФІЛЮ З СПРАВЖНІМ ЗАВАНТАЖЕННЯМ ФОТО -->
     <div class="modal-profile" id="profile-modal" onclick="closeProfileModalOutside(event)">
         <div class="modal-profile-content">
             <div class="profile-title">Мій профіль</div>
             
-            <!-- Робоче завантаження аватарки з пристрою -->
             <div class="avatar-uploader-container">
                 <div class="profile-avatar-current" id="profile-avatar-display"></div>
                 <label for="avatar-file-input" class="btn-upload-label">
@@ -989,7 +965,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА РЕЗУЛЬТАТУ -->
     <div class="modal" id="result-modal">
         <div class="modal-content">
             <div class="m-status" id="m-title">УСПІХ</div>
@@ -1020,27 +995,57 @@
         ];
 
         // ==========================================
-        // 📁 СТАРТОВИЙ ІНВЕНТАР
+        // 📁 СТАРТОВИЙ ІНВЕНТАР ТА БАЛАНС (З СХОВИЩЕМ)
         // ==========================================
-        let userInventory = [
-            { id: 1, name: "AK-47 | Захисна сітка (НФ)", price: 4.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/60202_b.png" },
-        ];
-
+        let userInventory = [];
         let userBalance = 550.00;
+        let savedAvatar = null;
+
         let selectedUserSkin = null;
         let selectedTargetSkin = null;
         let activeUpgradeChance = 0;
         let isUpgrading = false;
         let skinToSellIndex = null;
 
+        // Збереження даних у LocalStorage
+        function saveToStorage() {
+            localStorage.setItem('upgrader_balance', userBalance.toString());
+            localStorage.setItem('upgrader_inventory', JSON.stringify(userInventory));
+            if (savedAvatar) {
+                localStorage.setItem('upgrader_avatar', savedAvatar);
+            }
+        }
+
+        // Завантаження даних із LocalStorage
+        function loadFromStorage() {
+            const storedBalance = localStorage.getItem('upgrader_balance');
+            if (storedBalance !== null) {
+                userBalance = parseFloat(storedBalance);
+            }
+
+            const storedInventory = localStorage.getItem('upgrader_inventory');
+            if (storedInventory !== null) {
+                userInventory = JSON.parse(storedInventory);
+            } else {
+                // Дефолтна стартова річ, якщо сховище повністю порожнє
+                userInventory = [
+                    { id: 1, name: "AK-47 | Захисна сітка (НФ)", price: 4.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/60202_b.png" }
+                ];
+            }
+
+            savedAvatar = localStorage.getItem('upgrader_avatar');
+        }
+
         window.onload = function() {
+            loadFromStorage();
+            
             renderUserInventory();
             renderStore();
             renderLiveFeed();
             updateBalanceUI();
             
-            // Встановлюємо дефолтний красивий аватар для старту
-            const startAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii";
+            // Встановлюємо аватарку (завантажену або дефолтну)
+            const startAvatarUrl = savedAvatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii";
             document.getElementById('header-avatar').style.backgroundImage = `url('${startAvatarUrl}')`;
             document.getElementById('profile-avatar-display').style.backgroundImage = `url('${startAvatarUrl}')`;
         };
@@ -1054,6 +1059,7 @@
             if (isUpgrading) return;
             userBalance += 50;
             updateBalanceUI();
+            saveToStorage(); // Зберігаємо новий баланс
         }
 
         function renderUserInventory() {
@@ -1119,6 +1125,7 @@
             });
 
             renderUserInventory();
+            saveToStorage(); // Зберігаємо стан після купівлі
         }
 
         function selectUserSkin(skin, index) {
@@ -1275,6 +1282,7 @@
             modal.classList.add('active');
             renderLiveFeed();
             
+            saveToStorage(); // Зберігаємо результат апгрейду (виграш або програш)
             isUpgrading = false;
         }
 
@@ -1344,6 +1352,7 @@
             
             renderUserInventory();
             closeSellModal();
+            saveToStorage(); // Зберігаємо стан після продажу
         }
 
         // ==========================================
@@ -1396,9 +1405,13 @@
                 reader.onload = function(e) {
                     const imageUrl = e.target.result;
                     
+                    savedAvatar = imageUrl; // Запам'ятовуємо Base64 рядок картинки
+                    
                     // Оновлюємо аватарку в профілі та в шапці одночасно
                     document.getElementById('profile-avatar-display').style.backgroundImage = `url('${imageUrl}')`;
                     document.getElementById('header-avatar').style.backgroundImage = `url('${imageUrl}')`;
+                    
+                    saveToStorage(); // Зберігаємо фото в пам'ять браузера
                 };
                 reader.readAsDataURL(file);
             }
@@ -1434,6 +1447,7 @@
                     renderUserInventory();
                     removeSelectedUserSkin();
                     
+                    saveToStorage(); // Зберігаємо порожній інвентар після виведення
                     modal.classList.add('active');
                 }, 1500);
 
