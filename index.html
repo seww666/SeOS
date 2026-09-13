@@ -1,1460 +1,455 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>UPGRADER - SeWa</title>
-    <style>
-        :root {
-            --bg-main: #0c0d12;
-            --bg-panel: #14151c;
-            --bg-card: #1a1c24;
-            --accent-yellow: #ffd000;
-            --accent-yellow-hover: #e6bc00;
-            --text-white: #ffffff;
-            --text-gray: #787d91;
-            --border-color: #222530;
-            --steam-blue: #171a21;
-            --steam-light: #66c0f4;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-white);
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* --- ХЕДЕР --- */
-        header {
-            height: 60px;
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 10;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .logo {
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        .logo span { color: var(--accent-yellow); }
-
-        .stats {
-            display: none;
-            gap: 15px;
-            font-size: 11px;
-            color: var(--text-gray);
-        }
-        .stats span { color: #fff; font-weight: 600; }
-        .stats .online::before {
-            content: ''; display: inline-block; width: 6px; height: 6px; 
-            background: #2ed573; border-radius: 50%; margin-right: 4px; transform: translateY(-1px);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-profile-block {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #1a1c24;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s ease;
-        }
-        .user-profile-block:hover {
-            border-color: var(--accent-yellow);
-            box-shadow: 0 0 10px rgba(255, 208, 0, 0.15);
-        }
-
-        .user-avatar {
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            background: var(--accent-yellow);
-            flex-shrink: 0;
-            background-size: cover;
-            background-position: center;
-            background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii');
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-balance {
-            font-weight: 700;
-            color: var(--accent-yellow);
-            font-size: 13px;
-        }
-
-        .btn-add-funds {
-            background: #2ed573;
-            color: white;
-            border: none;
-            padding: 3px 6px;
-            font-size: 10px;
-            font-weight: bold;
-            border-radius: 3px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        /* --- ОСНОВНИЙ КОНТЕНТ --- */
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            margin-top: 60px;
-            height: calc(100vh - 60px);
-            width: 100%;
-            overflow: hidden;
-        }
-
-        /* Лівий Сайдбар */
-        .sidebar {
-            display: none;
-            width: 100%;
-            height: 70px;
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 8px 5px;
-            gap: 8px;
-            flex-direction: row;
-        }
-
-        .sidebar::-webkit-scrollbar { height: 3px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #222530; border-radius: 2px; }
-
-        .sidebar-item {
-            background: linear-gradient(135deg, #191b24 0%, #111218 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 6px;
-            text-align: center;
-            font-size: 9px;
-            color: var(--text-gray);
-            flex-shrink: 0;
-            width: 60px;
-        }
-        .sidebar-item img { width: 100%; height: 40px; object-fit: contain; }
-
-        /* Робоча зона */
-        .main-workspace {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-main);
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 15px 12px;
-            gap: 15px;
-        }
-
-        .main-workspace::-webkit-scrollbar { width: 3px; }
-        .main-workspace::-webkit-scrollbar-thumb { background: #222530; border-radius: 2px; }
-
-        /* Зони вибору та Апгрейдер */
-        .upgrade-floor {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .drop-zone {
-            width: 100%;
-            min-height: 150px;
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .drop-zone .placeholder-text {
-            color: var(--text-gray);
-            font-size: 12px;
-            max-width: 200px;
-            line-height: 1.4;
-            z-index: 2;
-        }
-
-        .drop-zone .bg-icon {
-            position: absolute;
-            font-size: 50px;
-            color: #1c1e29;
-            font-weight: 900;
-            z-index: 1;
-        }
-
-        /* --- КОЛЕСО АПГРЕЙДУ --- */
-        .center-wheel-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-        }
-
-        .wheel-spinner {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .wheel-ticker-arrow {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            animation: none;
-        }
-
-        .wheel-ticker-arrow.spinning {
-            animation: spinTicker 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-        @keyframes spinTicker {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(var(--final-rotation, 0deg)); }
-        }
-
-        .radial-center-button {
-            position: relative;
-            z-index: 4;
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: 900;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-        .radial-center-button span {
-            color: var(--accent-yellow);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 5;
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 10px solid var(--accent-yellow);
-            filter: drop-shadow(0 0 3px var(--accent-yellow));
-        }
-
-        .btn-action-upgrade {
-            width: 100%;
-            background-color: var(--accent-yellow);
-            color: #000;
-            border: none;
-            padding: 14px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
-        }
-        .btn-action-upgrade:disabled {
-            background-color: #222530;
-            color: var(--text-gray);
-            cursor: not-allowed;
-        }
-        .btn-action-upgrade:active:not(:disabled) {
-            transform: scale(0.98);
-        }
-
-        /* --- ІНВЕНТАРІ ТА МАГАЗИН --- */
-        .inventory-floor {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        .inventory-box {
-            flex: 1;
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            min-height: 200px;
-        }
-
-        .box-header {
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .box-header span { color: var(--accent-yellow); }
-
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 6px;
-            overflow-y: auto;
-            flex: 1;
-            padding-right: 3px;
-        }
-        .inventory-grid::-webkit-scrollbar { width: 3px; }
-        .inventory-grid::-webkit-scrollbar-thumb { background: #222530; border-radius: 2px; }
-
-        /* Картки скінів */
-        .skin-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-        }
-        .skin-card:active { border-color: var(--accent-yellow); background: #222530; }
-        
-        .skin-img-wrapper {
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 3px 0;
-        }
-
-        .skin-card img { 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
-        }
-        
-        .skin-card .card-name {
-            font-size: 9px; font-weight: 600; white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
-        }
-        .skin-card .card-price {
-            font-size: 10px; color: var(--accent-yellow); font-weight: 700;
-        }
-
-        .btn-buy-skin {
-            background: #ffd000;
-            border: none;
-            color: black;
-            font-size: 8px;
-            font-weight: bold;
-            padding: 3px 0;
-            border-radius: 3px;
-            margin-top: 4px;
-            cursor: pointer;
-        }
-        .btn-buy-skin:active {
-            transform: scale(0.95);
-        }
-
-        .btn-sell-skin {
-            background: #ff6b6b;
-            border: none;
-            color: white;
-            font-size: 8px;
-            font-weight: bold;
-            padding: 3px 0;
-            border-radius: 3px;
-            margin-top: 4px;
-            cursor: pointer;
-        }
-        .btn-sell-skin:active {
-            transform: scale(0.95);
-        }
-
-        /* Модалка продажу */
-        .modal-sell {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        .modal-sell.active { opacity: 1; pointer-events: auto; }
-        .modal-sell-content {
-            background: var(--bg-panel); padding: 25px; border-radius: 12px;
-            border: 1px solid var(--border-color); text-align: center; max-width: 90%; width: 100%;
-        }
-        .sell-title {
-            font-size: 16px; font-weight: 900; margin-bottom: 15px; color: #fff;
-        }
-        .sell-image {
-            height: 80px; margin: 15px 0; object-fit: contain;
-        }
-        .sell-name {
-            font-weight: 700; font-size: 13px; margin: 10px 0;
-        }
-        .sell-info {
-            background: var(--bg-card); padding: 12px; border-radius: 8px; margin: 15px 0;
-            border: 1px solid var(--border-color);
-        }
-        .sell-price-row {
-            display: flex; justify-content: space-between; margin: 8px 0;
-            font-size: 12px;
-        }
-        .sell-price-row.total {
-            font-weight: 700; font-size: 14px; color: #2ed573;
-            border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 8px;
-        }
-        .sell-buttons {
-            display: flex; gap: 10px; margin-top: 15px;
-        }
-        .sell-buttons button {
-            flex: 1; padding: 12px; border: none; font-weight: 700; 
-            border-radius: 4px; cursor: pointer; font-size: 13px;
-        }
-        .btn-confirm-sell {
-            background: #2ed573; color: black;
-        }
-        .btn-cancel-sell {
-            background: #222530; color: var(--text-gray);
-        }
-        .btn-confirm-sell:active {
-            transform: scale(0.98);
-        }
-        .btn-cancel-sell:active {
-            transform: scale(0.98);
-        }
-
-        /* --- ПРОКАЧАНА МОДАЛКА ПРОФІЛЮ КОРИСТУВАЧА --- */
-        .modal-profile {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 6, 10, 0.9);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 101; opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .modal-profile.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-profile-content {
-            background: var(--bg-panel); 
-            padding: 28px 24px; 
-            border-radius: 16px;
-            border: 1px solid rgba(255, 208, 0, 0.2); 
-            max-width: 92%; 
-            width: 390px; 
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(255, 208, 0, 0.05);
-            position: relative;
-        }
-        .profile-title {
-            font-size: 18px; font-weight: 900; margin-bottom: 22px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        
-        /* Прогресивна зона завантаження аватара */
-        .avatar-uploader-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 22px;
-        }
-        .profile-avatar-current {
-            width: 84px; height: 84px;
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii');
-            border: 3px solid var(--accent-yellow);
-            box-shadow: 0 0 15px rgba(255, 208, 0, 0.3);
-            position: relative;
-            transition: transform 0.2s ease;
-        }
-        .profile-avatar-current:hover {
-            transform: scale(1.03);
-        }
-        
-        .btn-upload-label {
-            background: var(--bg-card);
-            border: 1px dashed rgba(255, 208, 0, 0.5);
-            color: #fff;
-            padding: 8px 14px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-upload-label:hover {
-            background: rgba(255, 208, 0, 0.1);
-            border-color: var(--accent-yellow);
-        }
-        #avatar-file-input {
-            display: none;
-        }
-
-        .profile-stats-grid {
-            background: var(--bg-card); 
-            border: 1px solid var(--border-color); 
-            border-radius: 10px; 
-            padding: 16px; 
-            margin-bottom: 22px; 
-            text-align: left;
-        }
-        .p-stat-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 12px; 
-            font-size: 13px; 
-            color: var(--text-gray);
-        }
-        .p-stat-row:last-child { margin-bottom: 0; }
-        .p-stat-val { font-weight: 700; color: #fff; }
-        .p-best-skin { 
-            color: var(--accent-yellow); 
-            max-width: 170px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            text-align: right; 
-            font-weight: 800;
-        }
-        
-        /* Геймерська Steam кнопка */
-        .btn-steam-withdraw {
-            width: 100%; 
-            background: linear-gradient(135deg, #101216 0%, #171a21 100%); 
-            color: #66c0f4; 
-            border: 1px solid rgba(102, 192, 244, 0.4); 
-            padding: 14px; 
-            font-weight: 800; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 13px; 
-            text-transform: uppercase; 
-            transition: 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            letter-spacing: 0.5px;
-        }
-        .btn-steam-withdraw:hover:not(:disabled) { 
-            background: linear-gradient(135deg, #171a21 0%, #232835 100%);
-            border-color: #66c0f4;
-            box-shadow: 0 0 15px rgba(102, 192, 244, 0.25);
-            color: #fff;
-        }
-        .btn-steam-withdraw:disabled { 
-            opacity: 0.4; 
-            cursor: not-allowed; 
-            border-color: var(--border-color);
-            color: var(--text-gray);
-        }
-
-        .empty-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--text-gray);
-            font-size: 12px;
-            text-align: center;
-            padding: 10px;
-        }
-
-        /* Обраний скін в слоті */
-        .selected-skin-inner {
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .selected-skin-inner img { height: 80px; object-fit: contain; }
-        .selected-skin-inner .s-name { font-weight: 700; margin-top: 6px; font-size: 11px; line-height: 1.2;}
-        .selected-skin-inner .s-price { color: var(--accent-yellow); font-weight: 800; margin-top: 2px; font-size: 12px;}
-
-        /* Модалка результату */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 120; opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        .modal.active { opacity: 1; pointer-events: auto; }
-        .modal-content {
-            background: var(--bg-panel); padding: 25px; border-radius: 12px;
-            border: 1px solid var(--border-color); text-align: center; max-width: 90%; width: 100%;
-        }
-        .m-status { font-size: 18px; font-weight: 900; margin-bottom: 12px; }
-        .m-success { color: #2ed573; }
-        .m-fail { color: #ff4757; }
-        .m-btn {
-            margin-top: 15px; padding: 12px 25px; background: var(--accent-yellow);
-            color: #000; border: none; font-weight: 700; border-radius: 4px; cursor: pointer;
-            font-size: 14px;
-        }
-        .m-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* --- ПЛАНШЕТ (768px+) --- */
-        @media (min-width: 768px) {
-            .logo { font-size: 18px; }
-            
-            .sidebar {
-                display: flex;
-                width: 100px;
-                height: auto;
-                flex-direction: column;
-                border-right: 1px solid var(--border-color);
-                border-bottom: none;
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
-
-            .sidebar-item {
-                width: 100%;
-                height: auto;
-            }
-
-            .wrapper {
-                flex-direction: row;
-            }
-
-            .upgrade-floor {
-                flex-direction: row;
-            }
-
-            .drop-zone {
-                flex: 1;
-                min-height: 200px;
-            }
-
-            .center-wheel-area {
-                width: 220px;
-                gap: 15px;
-            }
-
-            .wheel-container {
-                width: 180px;
-                height: 180px;
-            }
-
-            .radial-center-button {
-                font-size: 24px;
-            }
-
-            .inventory-floor {
-                flex-direction: row;
-                gap: 20px;
-            }
-
-            .inventory-box {
-                flex: 1;
-                min-width: 320px;
-                min-height: 350px;
-            }
-
-            .inventory-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-                gap: 8px;
-            }
-
-            .skin-card {
-                padding: 8px;
-            }
-
-            .skin-img-wrapper {
-                height: 60px;
-            }
-
-            .selected-skin-inner img { height: 100px; }
-
-            .stats {
-                display: flex;
-            }
-
-            .user-profile-block {
-                gap: 12px;
-                padding: 6px 12px;
-            }
-        }
-
-        /* --- ДЕСКТОП (1024px+) --- */
-        @media (min-width: 1024px) {
-            .logo { font-size: 20px; letter-spacing: 1px; }
-            
-            header {
-                padding: 0 20px;
-            }
-
-            .header-left {
-                gap: 25px;
-            }
-
-            .sidebar {
-                width: 110px;
-                padding: 10px 5px;
-                gap: 8px;
-            }
-
-            .main-workspace {
-                padding: 25px;
-            }
-
-            .upgrade-floor {
-                gap: 20px;
-            }
-
-            .drop-zone {
-                min-height: 240px;
-            }
-
-            .center-wheel-area {
-                width: 260px;
-            }
-
-            .wheel-container {
-                width: 220px;
-                height: 220px;
-            }
-
-            .radial-center-button {
-                font-size: 26px;
-            }
-
-            .inventory-floor {
-                gap: 20px;
-            }
-
-            .inventory-box {
-                min-width: 340px;
-                height: 400px;
-            }
-
-            .inventory-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-
-            .selected-skin-inner img { height: 100px; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SeWa OS</title>
+<style>
+  :root{
+    --accent:#7c3aed;
+    --bg:#08090d;
+    --panel:rgba(18,20,28,.72);
+    --panel-solid:#151821;
+    --text:#f6f7fb;
+    --muted:#9ca3af;
+    --border:rgba(255,255,255,.10);
+    --shadow:0 25px 80px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;font-family:Inter,Segoe UI,Arial,sans-serif;background:#05060a;color:var(--text);user-select:none}
+  button,input,textarea{font:inherit}
+  button{color:inherit}
+  #boot{
+    position:fixed;inset:0;z-index:9999;background:#05060a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+    transition:.6s ease;
+  }
+  .boot-logo{font-size:46px;font-weight:800;letter-spacing:-2px}
+  .boot-logo b{color:var(--accent)}
+  .loader{width:190px;height:4px;background:#1b1f2a;border-radius:999px;overflow:hidden}
+  .loader::after{content:"";display:block;height:100%;width:45%;background:var(--accent);border-radius:999px;animation:load 1.1s infinite ease-in-out}
+  @keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(330%)}}
+  #desktop{
+    position:fixed;inset:0 0 54px 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(124,58,237,.18), transparent 30%),
+      radial-gradient(circle at 80% 70%, rgba(59,130,246,.12), transparent 32%),
+      linear-gradient(145deg,#080a10,#111528);
+    overflow:hidden;
+  }
+  #desktop.wallpaper-2{
+    background:
+      radial-gradient(circle at 50% -20%, rgba(255,255,255,.14),transparent 35%),
+      linear-gradient(140deg,#111,#2a2a2a 50%,#0b0b0b);
+  }
+  #desktop.wallpaper-3{
+    background:
+      radial-gradient(circle at 22% 30%,rgba(34,197,94,.25),transparent 25%),
+      radial-gradient(circle at 75% 65%,rgba(14,165,233,.2),transparent 25%),
+      linear-gradient(135deg,#03140f,#071c29);
+  }
+  .brand{
+    position:absolute;right:28px;bottom:28px;text-align:right;opacity:.32;pointer-events:none
+  }
+  .brand .big{font-size:58px;font-weight:900;letter-spacing:-4px}
+  .brand .small{font-size:12px;letter-spacing:4px;text-transform:uppercase}
+  #icons{display:grid;grid-template-columns:repeat(auto-fill,88px);grid-auto-rows:96px;gap:8px;padding:18px;width:210px}
+  .desktop-icon{
+    width:84px;height:88px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;
+    font-size:12px;text-align:center;padding:6px;cursor:default;border:1px solid transparent
+  }
+  .desktop-icon:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.06)}
+  .desktop-icon .ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  #taskbar{
+    position:fixed;left:0;right:0;bottom:0;height:54px;z-index:9000;background:rgba(10,12,18,.78);backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:6px 10px
+  }
+  .task-btn{height:40px;min-width:40px;border:0;border-radius:11px;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .task-btn:hover{background:rgba(255,255,255,.08)}
+  .task-btn.active{background:rgba(255,255,255,.11)}
+  .start-logo{font-weight:900;font-size:17px}
+  .start-logo b{color:var(--accent)}
+  #taskApps{display:flex;gap:5px;flex:1}
+  #tray{display:flex;align-items:center;gap:10px;font-size:12px;color:#d8dbe4;padding:0 6px}
+  #clock{text-align:right;line-height:1.15;min-width:72px}
+  #startMenu{
+    position:fixed;left:10px;bottom:62px;z-index:9100;width:360px;max-height:560px;padding:14px;border-radius:20px;
+    background:rgba(18,20,29,.88);backdrop-filter:blur(26px);border:1px solid var(--border);box-shadow:var(--shadow);
+    opacity:0;transform:translateY(16px) scale(.98);pointer-events:none;transition:.18s ease
+  }
+  #startMenu.open{opacity:1;transform:none;pointer-events:auto}
+  .search{
+    width:100%;height:42px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:white;padding:0 14px;outline:none
+  }
+  .section-title{font-size:12px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+  .app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .app-tile{padding:10px 6px;border-radius:12px;text-align:center;font-size:11px;cursor:pointer}
+  .app-tile:hover{background:rgba(255,255,255,.07)}
+  .app-tile .tile-ico{font-size:23px;margin-bottom:6px}
+  .menu-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+  .user{display:flex;align-items:center;gap:9px;font-size:13px}
+  .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#2563eb);display:grid;place-items:center;font-weight:800}
+  .window{
+    position:absolute;width:650px;height:430px;min-width:300px;min-height:220px;background:rgba(17,20,28,.92);backdrop-filter:blur(20px);
+    border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:none;resize:both
+  }
+  .window.show{display:block}
+  .window.max{left:8px!important;top:8px!important;width:calc(100% - 16px)!important;height:calc(100% - 16px)!important;resize:none}
+  .titlebar{height:46px;display:flex;align-items:center;border-bottom:1px solid var(--border);padding-left:14px;cursor:move}
+  .titlebar .title{flex:1;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .win-actions{display:flex;height:100%}
+  .win-actions button{width:46px;border:0;background:transparent;cursor:pointer}
+  .win-actions button:hover{background:rgba(255,255,255,.08)}
+  .win-actions .close:hover{background:#ef4444}
+  .content{height:calc(100% - 46px);overflow:auto}
+  .pad{padding:16px}
+  textarea.note{
+    width:100%;height:100%;resize:none;border:0;outline:none;background:#0d1017;color:#f7f7f7;padding:18px;font-size:15px;line-height:1.6;user-select:text
+  }
+  .calc{padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;height:100%}
+  .calc-display{grid-column:1/-1;height:76px;border-radius:13px;background:#090b10;border:1px solid var(--border);padding:16px;text-align:right;font-size:30px;overflow:hidden;user-select:text}
+  .calc button{border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.06);cursor:pointer;font-size:17px}
+  .calc button:hover{background:rgba(255,255,255,.11)}
+  .calc .accent{background:color-mix(in srgb,var(--accent) 70%, #111)}
+  .terminal{height:100%;padding:14px;background:#05060a;color:#d7ffd7;font-family:Consolas,monospace;font-size:13px;overflow:auto;user-select:text}
+  .term-line{white-space:pre-wrap}
+  .term-row{display:flex;gap:8px;margin-top:4px}
+  .prompt{color:#a78bfa}
+  .term-input{flex:1;background:transparent;color:#d7ffd7;border:0;outline:0;font-family:inherit}
+  .settings{display:grid;grid-template-columns:180px 1fr;height:100%}
+  .sidebar{border-right:1px solid var(--border);padding:12px}
+  .side-item{padding:11px;border-radius:10px;font-size:13px;margin-bottom:4px}
+  .side-item.active,.side-item:hover{background:rgba(255,255,255,.07)}
+  .setting-page{padding:22px;overflow:auto}
+  .setting-card{border:1px solid var(--border);background:rgba(255,255,255,.035);padding:16px;border-radius:14px;margin:12px 0}
+  .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .swatch{width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.15);cursor:pointer}
+  .wallpapers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .wall{aspect-ratio:16/9;border-radius:10px;border:2px solid var(--border);cursor:pointer}
+  .w1{background:linear-gradient(145deg,#080a10,#111528)}
+  .w2{background:linear-gradient(140deg,#111,#2a2a2a,#0b0b0b)}
+  .w3{background:linear-gradient(135deg,#03140f,#071c29)}
+  .files{display:grid;grid-template-columns:180px 1fr;height:100%}
+  .file-list{padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;align-content:start}
+  .file{padding:14px 8px;border-radius:12px;text-align:center;border:1px solid var(--border);background:rgba(255,255,255,.035);font-size:12px}
+  .file .ficon{font-size:28px;margin-bottom:8px}
+  .browser{display:flex;flex-direction:column;height:100%}
+  .browserbar{display:flex;gap:8px;padding:9px;border-bottom:1px solid var(--border)}
+  .browserbar input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;color:white;padding:8px 12px;outline:0;user-select:text}
+  .browserbar button{border:0;background:rgba(255,255,255,.08);border-radius:10px;padding:0 12px;cursor:pointer}
+  .browserpage{flex:1;display:grid;place-items:center;text-align:center;padding:30px}
+  .browserpage h1{font-size:42px;margin:0 0 8px}
+  .browserpage b{color:var(--accent)}
+  .browserpage p{color:var(--muted);max-width:500px}
+  .system-card{max-width:620px;padding:24px;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.04)}
+  .system-logo{font-size:54px;font-weight:900;letter-spacing:-3px}
+  .system-logo b{color:var(--accent)}
+  .toast{position:fixed;right:16px;bottom:70px;z-index:9900;padding:13px 16px;border-radius:12px;background:rgba(20,23,31,.95);border:1px solid var(--border);box-shadow:var(--shadow);font-size:13px;transform:translateX(130%);transition:.25s}
+  .toast.show{transform:none}
+  @media(max-width:700px){
+    .window{width:calc(100% - 12px)!important;height:calc(100% - 12px)!important;left:6px!important;top:6px!important;border-radius:13px;resize:none}
+    #startMenu{left:8px;right:8px;width:auto}
+    .settings,.files{grid-template-columns:1fr}
+    .settings .sidebar,.files .sidebar{display:none}
+    .brand{display:none}
+    #tray .status{display:none}
+  }
+</style>
 </head>
 <body>
+<div id="boot">
+  <div class="boot-logo">SeWa <b>OS</b></div>
+  <div class="loader"></div>
+  <div style="color:#777;font-size:12px">Starting SeWa OS...</div>
+</div>
 
-    <header>
-        <div class="header-left">
-            <div class="logo">▲ UPGRADER<span></span></div>
-            <div class="stats">
-                <div class="online">Онлайн: <span>451</span></div>
-                <div>Апгрейдів: <span>174532</span></div>
-            </div>
-        </div>
-        <div class="header-right">
-            <div class="user-profile-block" onclick="openProfileModal()">
-                <div class="user-avatar" id="header-avatar"></div>
-                <div>
-                    <div style="font-size: 10px; color: var(--text-gray);">Баланс</div>
-                    <div class="user-balance">$<span id="balance-amount">550.0</span></div>
-                </div>
-                <button class="btn-add-funds" onclick="depositMoney(event)">+$50</button>
-            </div>
-        </div>
-    </header>
+<div id="desktop">
+  <div id="icons"></div>
+  <div class="brand"><div class="big">SeWa OS</div><div class="small">Web Operating System</div></div>
+</div>
 
-    <div class="wrapper">
-        <div class="sidebar" id="live-sidebar"></div>
+<div id="startMenu">
+  <input id="search" class="search" placeholder="Пошук програм..." />
+  <div class="section-title">Програми</div>
+  <div class="app-grid" id="appGrid"></div>
+  <div class="menu-footer">
+    <div class="user"><div class="avatar">S</div><div><b>SeWa</b><div style="color:#8e95a5;font-size:11px">Administrator</div></div></div>
+    <button class="task-btn" onclick="fakePower()" title="Живлення">⏻</button>
+  </div>
+</div>
 
-        <div class="main-workspace">
-            
-            <div class="upgrade-floor">
-                <div class="drop-zone" id="user-zone" onclick="removeSelectedUserSkin()">
-                    <div class="bg-icon">▲</div>
-                    <div class="placeholder-text" id="user-placeholder">
-                        Виберіть скін нижче
-                    </div>
-                </div>
+<div id="taskbar">
+  <button class="task-btn start-logo" id="startBtn">SeWa <b>OS</b></button>
+  <div id="taskApps"></div>
+  <div id="tray"><span class="status">◉ Wi-Fi</span><span>🔊</span><div id="clock"></div></div>
+</div>
 
-                <div class="center-wheel-area">
-                    <div class="wheel-container">
-                        <svg class="wheel-spinner" id="wheel-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-                            <path id="success-sector" d="M 110 110 L 110 10 A 100 100 0 0 1 160 23 Z" fill="#2ed573" opacity="0.9"/>
-                            
-                            <path id="fail-sector" d="M 110 110 L 160 23 A 100 100 0 0 1 110 210 Z" fill="#ff4757" opacity="0.9"/>
-                            
-                            <circle cx="110" cy="110" r="100" fill="none" stroke="#444" stroke-width="1" opacity="0.4"/>
-                            
-                            <g id="tick-marks" stroke="#666" stroke-width="1" opacity="0.6">
-                                <line x1="110" y1="8" x2="110" y2="15" />
-                                <line x1="161.5" y1="13.5" x2="165.5" y2="19.5" />
-                                <line x1="205" y1="35" x2="209" y2="40" />
-                                <line x1="200.5" y1="72" x2="207.5" y2="73" />
-                                <line x1="200" y1="110" x2="207.5" y2="110" />
-                                <line x1="200.5" y1="148" x2="207.5" y2="147" />
-                                <line x1="205" y1="185" x2="209" y2="180" />
-                                <line x1="161.5" y1="206.5" x2="165.5" y2="200.5" />
-                                <line x1="110" y1="212" x2="110" y2="205" />
-                                <line x1="58.5" y1="206.5" x2="54.5" y2="200.5" />
-                                <line x1="15" y1="185" x2="11" y2="180" />
-                                <line x1="19.5" y1="148" x2="12.5" y2="147" />
-                                <line x1="20" y1="110" x2="12.5" y2="110" />
-                                <line x1="19.5" y1="72" x2="12.5" y2="73" />
-                                <line x1="15" y1="35" x2="11" y2="40" />
-                                <line x1="58.5" y1="13.5" x2="54.5" y2="19.5" />
-                            </g>
+<div id="toast" class="toast">Готово</div>
 
-                            <circle cx="110" cy="110" r="68" fill="#0c0d12" stroke="#14151c" stroke-width="2"/>
-                        </svg>
+<script>
+const apps = [
+  {id:'browser',name:'SeWa Browser',icon:'🌐'},
+  {id:'files',name:'Файли',icon:'📁'},
+  {id:'notes',name:'Нотатки',icon:'📝'},
+  {id:'calc',name:'Калькулятор',icon:'🧮'},
+  {id:'terminal',name:'Термінал',icon:'⌨️'},
+  {id:'settings',name:'Налаштування',icon:'⚙️'},
+  {id:'about',name:'Про систему',icon:'💻'}
+];
+const desktopApps=['browser','files','notes','terminal','settings'];
 
-                        <svg class="wheel-ticker-arrow" id="wheel-ticker" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(110, 110)">
-                                <polygon points="0,-95 8,-75 -8,-75" fill="#ffd000" filter="drop-shadow(0 0 4px #ffd000)"/>
-                                <circle cx="0" cy="0" r="5" fill="#ffd000" opacity="0.8"/>
-                            </g>
-                        </svg>
+const appGrid=document.getElementById('appGrid');
+const icons=document.getElementById('icons');
+const taskApps=document.getElementById('taskApps');
+const startMenu=document.getElementById('startMenu');
+const startBtn=document.getElementById('startBtn');
+let z=10;
 
-                        <div class="radial-center-button">
-                            <span id="chance-text">0.00%</span>
-                        </div>
-                    </div>
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+function renderLaunchers(){
+  apps.forEach(a=>{
+    const tile=document.createElement('div');
+    tile.className='app-tile';
+    tile.innerHTML=`<div class="tile-ico">${a.icon}</div>${a.name}`;
+    tile.onclick=()=>openApp(a.id);
+    appGrid.appendChild(tile);
+  });
+  desktopApps.forEach(id=>{
+    const a=apps.find(x=>x.id===id);
+    const d=document.createElement('div');
+    d.className='desktop-icon';
+    d.innerHTML=`<div class="ico">${a.icon}</div><div>${a.name}</div>`;
+    d.ondblclick=()=>openApp(id);
+    icons.appendChild(d);
+  });
+}
+renderLaunchers();
 
-                    <button class="btn-action-upgrade" id="btn-fire" disabled onclick="executeUpgrade()">▲ Прокачити</button>
-                </div>
+startBtn.onclick=()=>startMenu.classList.toggle('open');
+document.getElementById('desktop').addEventListener('click',()=>startMenu.classList.remove('open'));
+document.getElementById('search').addEventListener('input',e=>{
+  [...appGrid.children].forEach((el,i)=>{
+    el.style.display=apps[i].name.toLowerCase().includes(e.target.value.toLowerCase())?'':'none'
+  });
+});
 
-                <div class="drop-zone" id="target-zone" onclick="removeSelectedTargetSkin()">
-                    <div class="bg-icon">▲</div>
-                    <div class="placeholder-text" id="target-placeholder">
-                        Виберіть предмет магазину
-                    </div>
-                </div>
-            </div>
-
-            <div class="inventory-floor">
-                
-                <div class="inventory-box">
-                    <div class="box-header">📁 Мій інвентар (<span id="inv-count">0</span>)</div>
-                    <div class="inventory-grid" id="user-inventory-grid">
-                        <div class="empty-placeholder">Інвентар порожній</div>
-                    </div>
-                </div>
-
-                <div class="inventory-box">
-                    <div class="box-header"><span>🛒 Магазин</span></div>
-                    <div class="inventory-grid" id="store-inventory-grid"></div>
-                </div>
-
-            </div>
-
-        </div>
+function makeWindow(id,title,icon,body,w=650,h=430){
+  const win=document.createElement('div');
+  win.className='window show';win.dataset.id=id;
+  win.style.width=w+'px';win.style.height=h+'px';
+  win.style.left=(80+Math.random()*130)+'px';win.style.top=(55+Math.random()*90)+'px';
+  win.innerHTML=`
+    <div class="titlebar">
+      <div class="title">${icon} ${title}</div>
+      <div class="win-actions">
+        <button onclick="minimizeWin('${id}')">—</button>
+        <button onclick="maximizeWin('${id}')">▢</button>
+        <button class="close" onclick="closeWin('${id}')">×</button>
+      </div>
     </div>
-
-    <div class="modal-sell" id="sell-modal">
-        <div class="modal-sell-content">
-            <div class="sell-title">ПРОДАТИ СКІН</div>
-            <img id="sell-image" class="sell-image" src="">
-            <div class="sell-name" id="sell-name"></div>
-            
-            <div class="sell-info">
-                <div class="sell-price-row">
-                    <span>Ціна скіна:</span>
-                    <span id="sell-price" style="color: var(--accent-yellow);">$0.00</span>
-                </div>
-                <div class="sell-price-row">
-                    <span>Комісія (4%):</span>
-                    <span id="sell-commission" style="color: #ff6b6b;">-$0.00</span>
-                </div>
-                <div class="sell-price-row total">
-                    <span>Ви отримаєте:</span>
-                    <span id="sell-total" style="color: #2ed573;">$0.00</span>
-                </div>
-            </div>
-
-            <div class="sell-buttons">
-                <button class="btn-confirm-sell" onclick="confirmSellSkin()">Продати</button>
-                <button class="btn-cancel-sell" onclick="closeSellModal()">Скасувати</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-profile" id="profile-modal" onclick="closeProfileModalOutside(event)">
-        <div class="modal-profile-content">
-            <div class="profile-title">Мій профіль</div>
-            
-            <div class="avatar-uploader-container">
-                <div class="profile-avatar-current" id="profile-avatar-display"></div>
-                <label for="avatar-file-input" class="btn-upload-label">
-                    📷 Вибрати фото з телефону
-                </label>
-                <input type="file" id="avatar-file-input" accept="image/*" onchange="loadAvatarFromDevice(event)">
-            </div>
-            
-            <div class="profile-stats-grid">
-                <div class="p-stat-row">
-                    <span>Усього предметів:</span>
-                    <span class="p-stat-val" id="p-stat-count">0</span>
-                </div>
-                <div class="p-stat-row">
-                    <span>Вартість інвентарю:</span>
-                    <span class="p-stat-val" id="p-stat-worth">$0.00</span>
-                </div>
-                <div class="p-stat-row">
-                    <span>Найкращий апгрейд:</span>
-                    <span class="p-stat-val p-best-skin" id="p-stat-best">Немає</span>
-                </div>
-            </div>
-
-            <button class="btn-steam-withdraw" id="btn-steam-action" onclick="withdrawToSteam()">Вивести скіни на Steam</button>
-            <button class="m-btn" style="width: 100%; margin-top: 12px; background: #222530; color: var(--text-gray);" onclick="closeProfileModal()">Закрити</button>
-        </div>
-    </div>
-
-    <div class="modal" id="result-modal">
-        <div class="modal-content">
-            <div class="m-status" id="m-title">УСПІХ</div>
-            <div id="m-body"></div>
-            <button class="m-btn" onclick="closeModal()">Закрити</button>
-        </div>
-    </div>
-
-    <script>
-        // ==========================================
-        // 🛒 НАЛАШТУВАННЯ МАГАЗИНУ
-        // ==========================================
-        const globalStoreProducts = [
-            { id: 101, name: "AK-47 | Захисна сітка (НФ)", price: 4.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/60202_b.png" },
-            { id: 102, name: "Glock-18 | AXIA (ПН)", price: 34.36, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/184796_b.png" },
-            { id: 103, name: "AK-47 | Сланец (ППИ)", price: 5.88, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/149103_b.png" },
-            { id: 104, name: "★ Нож-бабочка | Градиент", price: 144563.67, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/12474_b.png" },
-            { id: 105, name: "Desert Eagle | Декорація", price: 0.23, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/12406_b.png" },
-            { id: 106, name: "P250 | Copper Oxide", price: 0.54, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/187364_b.png" },
-            { id: 107, name: "AK-47 | Сланці", price: 42.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/149156_b.png" },
-            { id: 108, name: "AK-47 | Закалка", price: 530.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/8931_b.png" },
-            { id: 109, name: "AK-47 | Дикий лотос", price: 15000.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/145355_b.png" },
-            { id: 110, name: "Glock-18 | Зимний варіант", price: 0.25, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/156695_b.png" },
-            { id: 111, name: "Sticker | Titan Holo", price: 79866.98, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/11396_b.png" },
-            { id: 112, name: "Desert Eagle | Узбережжя", price: 391.18, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/151293_b.png" },
-            { id: 113, name: "Наклейка | Lynn Vision", price: 1.51, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/216542_b.png" },
-            { id: 114, name: "★ Мотоциклетные перчатки | Коммандо (ЗБ)", price: 45.67, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/148338_b.png" },
-            { id: 115, name: "★ Мотоциклетные перчатки | Транспорт (ЗБ)", price: 41.45, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/39463_b.png" },
-            { id: 116, name: "★  Ніж Боуї | Хвилі  (ПФ)", price: 757, 59, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/98954_b.png" },
-        ];
-
-        // ==========================================
-        // 📁 СТАРТОВИЙ ІНВЕНТАР ТА БАЛАНС (З СХОВИЩЕМ)
-        // ==========================================
-        let userInventory = [];
-        let userBalance = 550.00;
-        let savedAvatar = null;
-
-        let selectedUserSkin = null;
-        let selectedTargetSkin = null;
-        let activeUpgradeChance = 0;
-        let isUpgrading = false;
-        let skinToSellIndex = null;
-
-        // Збереження даних у LocalStorage
-        function saveToStorage() {
-            localStorage.setItem('upgrader_balance', userBalance.toString());
-            localStorage.setItem('upgrader_inventory', JSON.stringify(userInventory));
-            if (savedAvatar) {
-                localStorage.setItem('upgrader_avatar', savedAvatar);
-            }
-        }
-
-        // Завантаження даних із LocalStorage
-        function loadFromStorage() {
-            const storedBalance = localStorage.getItem('upgrader_balance');
-            if (storedBalance !== null) {
-                userBalance = parseFloat(storedBalance);
-            }
-
-            const storedInventory = localStorage.getItem('upgrader_inventory');
-            if (storedInventory !== null) {
-                userInventory = JSON.parse(storedInventory);
-            } else {
-                // Дефолтна стартова річ, якщо сховище повністю порожнє
-                userInventory = [
-                    { id: 1, name: "AK-47 | Захисна сітка (НФ)", price: 4.00, img: "https://assets.lis-skins.com/cdn-cgi/image/f=auto,fit=scale-down/https://assets.lis-skins.com/market_images/60202_b.png" }
-                ];
-            }
-
-            savedAvatar = localStorage.getItem('upgrader_avatar');
-        }
-
-        window.onload = function() {
-            loadFromStorage();
-            
-            renderUserInventory();
-            renderStore();
-            renderLiveFeed();
-            updateBalanceUI();
-            
-            // Встановлюємо аватарку (завантажену або дефолтну)
-            const startAvatarUrl = savedAvatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Vitalii";
-            document.getElementById('header-avatar').style.backgroundImage = `url('${startAvatarUrl}')`;
-            document.getElementById('profile-avatar-display').style.backgroundImage = `url('${startAvatarUrl}')`;
-        };
-
-        function updateBalanceUI() {
-            document.getElementById('balance-amount').innerText = userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function depositMoney(event) {
-            if (event) event.stopPropagation();
-            if (isUpgrading) return;
-            userBalance += 50;
-            updateBalanceUI();
-            saveToStorage(); // Зберігаємо новий баланс
-        }
-
-        function renderUserInventory() {
-            const grid = document.getElementById('user-inventory-grid');
-            document.getElementById('inv-count').innerText = userInventory.length;
-            
-            if (userInventory.length === 0) {
-                grid.innerHTML = '<div class="empty-placeholder">Інвентар порожній</div>';
-                return;
-            }
-
-            grid.innerHTML = '';
-            userInventory.forEach((skin, index) => {
-                const card = document.createElement('div');
-                card.className = 'skin-card';
-                card.innerHTML = `
-                    <div class="card-name">${skin.name}</div>
-                    <div class="skin-img-wrapper"><img src="${skin.img}"></div>
-                    <div class="card-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                    <button class="btn-sell-skin" onclick="openSellModal(event, ${index})">Продати</button>
-                `;
-                card.onclick = () => selectUserSkin(skin, index);
-                grid.appendChild(card);
-            });
-        }
-
-        function renderStore() {
-            const grid = document.getElementById('store-inventory-grid');
-            grid.innerHTML = '';
-
-            globalStoreProducts.forEach(product => {
-                const card = document.createElement('div');
-                card.className = 'skin-card';
-                card.innerHTML = `
-                    <div class="card-name">${product.name}</div>
-                    <div class="skin-img-wrapper"><img src="${product.img}"></div>
-                    <div class="card-price">$${product.price.toLocaleString('en-US', {minimumFractionDigits: product.price > 1000 ? 0 : 2})}</div>
-                    <button class="btn-buy-skin" onclick="buySkinFromStore(event, ${product.id})">Купити</button>
-                `;
-                card.onclick = () => selectTargetSkin(product);
-                grid.appendChild(card);
-            });
-        }
-
-        function buySkinFromStore(event, productId) {
-            event.stopPropagation();
-            if (isUpgrading) return;
-            const product = globalStoreProducts.find(p => p.id === productId);
-            
-            if (userBalance < product.price) {
-                alert("Недостатньо балансу!");
-                return;
-            }
-
-            userBalance -= product.price;
-            updateBalanceUI();
-
-            userInventory.push({
-                id: Date.now(),
-                name: product.name,
-                price: product.price,
-                img: product.img
-            });
-
-            renderUserInventory();
-            saveToStorage(); // Зберігаємо стан після купівлі
-        }
-
-        function selectUserSkin(skin, index) {
-            if (isUpgrading) return;
-            selectedUserSkin = { ...skin, indexInInv: index };
-            const zone = document.getElementById('user-zone');
-            zone.innerHTML = `
-                <div class="selected-skin-inner">
-                    <img src="${skin.img}">
-                    <div class="s-name">${skin.name}</div>
-                    <div class="s-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                </div>
-            `;
-            calculateUpgradeOdds();
-        }
-
-        function selectTargetSkin(skin) {
-            if (isUpgrading) return;
-            if (selectedUserSkin && skin.price <= selectedUserSkin.price) {
-                alert("Ціль повинна бути дорожчою!");
-                return;
-            }
-            selectedTargetSkin = skin;
-            const zone = document.getElementById('target-zone');
-            zone.innerHTML = `
-                <div class="selected-skin-inner">
-                    <img src="${skin.img}">
-                    <div class="s-name">${skin.name}</div>
-                    <div class="s-price">$${skin.price.toLocaleString('en-US', {minimumFractionDigits: skin.price > 1000 ? 0 : 2})}</div>
-                </div>
-            `;
-            calculateUpgradeOdds();
-        }
-
-        function removeSelectedUserSkin() {
-            if (isUpgrading) return;
-            selectedUserSkin = null;
-            document.getElementById('user-zone').innerHTML = '<div class="bg-icon">▲</div><div class="placeholder-text">Виберіть скін нижче</div>';
-            calculateUpgradeOdds();
-        }
-
-        function removeSelectedTargetSkin() {
-            if (isUpgrading) return;
-            selectedTargetSkin = null;
-            document.getElementById('target-zone').innerHTML = '<div class="bg-icon">▲</div><div class="placeholder-text">Виберіть предмет магазину</div>';
-            calculateUpgradeOdds();
-        }
-
-        function calculateUpgradeOdds() {
-            if (!selectedUserSkin || !selectedTargetSkin) {
-                document.getElementById('chance-text').innerText = '0.00%';
-                document.getElementById('btn-fire').disabled = true;
-                updateWheelSectors(0);
-                return;
-            }
-
-            activeUpgradeChance = (selectedUserSkin.price / selectedTargetSkin.price) * 100;
-            if (activeUpgradeChance > 100) activeUpgradeChance = 100;
-
-            document.getElementById('chance-text').innerText = `${activeUpgradeChance.toFixed(2)}%`;
-            document.getElementById('btn-fire').disabled = false;
-            updateWheelSectors(activeUpgradeChance);
-        }
-
-        function updateWheelSectors(successChance) {
-            const successDegrees = (successChance / 100) * 360;
-            
-            const successSector = document.getElementById('success-sector');
-            const failSector = document.getElementById('fail-sector');
-
-            if (successChance === 0) {
-                successSector.style.display = 'none';
-                failSector.setAttribute('d', 'M 110 110 L 110 10 A 100 100 0 1 1 109.99 10 Z');
-            } else if (successChance >= 100) {
-                failSector.style.display = 'none';
-                successSector.setAttribute('d', 'M 110 110 L 110 10 A 100 100 0 1 1 109.99 10 Z');
-            } else {
-                successSector.style.display = 'block';
-                failSector.style.display = 'block';
-
-                const angle = (successDegrees * Math.PI) / 180;
-                const x2 = 110 + 100 * Math.sin(angle);
-                const y2 = 110 - 100 * Math.cos(angle);
-
-                const largeArc = successDegrees > 180 ? 1 : 0;
-
-                successSector.setAttribute('d', `M 110 110 L 110 10 A 100 100 0 ${largeArc} 1 ${x2} ${y2} Z`);
-
-                const failLargeArc = successDegrees <= 180 ? 1 : 0;
-                failSector.setAttribute('d', `M 110 110 L ${x2} ${y2} A 100 100 0 ${failLargeArc} 1 110 10 Z`);
-            }
-        }
-
-        function executeUpgrade() {
-            if (!selectedUserSkin || !selectedTargetSkin || isUpgrading) return;
-            
-            isUpgrading = true;
-            document.getElementById('btn-fire').disabled = true;
-
-            const finalRollDegree = Math.random() * 360;
-            const totalRotations = 4;
-            const finalTargetDegrees = (totalRotations * 360) + finalRollDegree;
-
-            const wheelTicker = document.getElementById('wheel-ticker');
-            wheelTicker.style.setProperty('--final-rotation', finalTargetDegrees + 'deg');
-            wheelTicker.classList.add('spinning');
-
-            setTimeout(() => {
-                const winAreaDegrees = (activeUpgradeChance / 100) * 360;
-                const isWinner = finalRollDegree <= winAreaDegrees;
-                
-                determineOutcome(isWinner);
-                wheelTicker.classList.remove('spinning');
-            }, 3000);
-        }
-
-        function determineOutcome(isWinner) {
-            const modal = document.getElementById('result-modal');
-            const title = document.getElementById('m-title');
-            const body = document.getElementById('m-body');
-
-            if (isWinner) {
-                title.innerText = "УСПІХ!";
-                title.className = "m-status m-success";
-                body.innerHTML = `
-                    <p style="margin-bottom: 10px;">Ви отримали:</p>
-                    <img src="${selectedTargetSkin.img}" style="height:80px; margin: 10px 0;">
-                    <p style="font-weight:700; font-size: 13px; margin-top: 10px;">${selectedTargetSkin.name}</p>
-                    <p style="color: var(--accent-yellow); font-size: 14px;">$${selectedTargetSkin.price.toLocaleString('en-US')}</p>
-                `;
-
-                userInventory.splice(selectedUserSkin.indexInInv, 1, {
-                    id: Date.now(),
-                    name: selectedTargetSkin.name,
-                    price: selectedTargetSkin.price,
-                    img: selectedTargetSkin.img
-                });
-
-            } else {
-                title.innerText = "ПРОВАЛ!";
-                title.className = "m-status m-fail";
-                body.innerHTML = `
-                    <p style="margin-bottom: 10px;">Ваш предмет згорів</p>
-                    <img src="${selectedUserSkin.img}" style="height:80px; margin: 10px 0; opacity: 0.15; filter: grayscale(100%);">
-                    <p style="color:var(--text-gray); font-size:12px; margin-top: 10px;">${selectedUserSkin.name} втрачено</p>
-                `;
-
-                userInventory.splice(selectedUserSkin.indexInInv, 1);
-            }
-
-            renderUserInventory();
-            removeSelectedUserSkin();
-            removeSelectedTargetSkin();
-            modal.classList.add('active');
-            renderLiveFeed();
-            
-            saveToStorage(); // Зберігаємо результат апгрейду (виграш або програш)
-            isUpgrading = false;
-        }
-
-        function closeModal() {
-            document.getElementById('result-modal').classList.remove('active');
-        }
-
-        function renderLiveFeed() {
-            const sidebar = document.getElementById('live-sidebar');
-            sidebar.innerHTML = '';
-            for(let i = 0; i < 10; i++) {
-                const randomItem = globalStoreProducts[Math.floor(Math.random() * globalStoreProducts.length)];
-                const div = document.createElement('div');
-                div.className = 'sidebar-item';
-                div.innerHTML = `
-                    <img src="${randomItem.img}">
-                    <div style="font-size: 8px;">${randomItem.name.substring(0, 15)}</div>
-                `;
-                sidebar.appendChild(div);
-            }
-        }
-
-        // ==========================================
-        // 💰 ФУНКЦІОНАЛ ПРОДАЖУ СКІНІВ
-        // ==========================================
-        function openSellModal(event, index) {
-            event.stopPropagation();
-            if (isUpgrading) return;
-            
-            skinToSellIndex = index;
-            const skin = userInventory[index];
-            
-            const price = skin.price;
-            const commission = price * 0.04;
-            const total = price - commission;
-
-            document.getElementById('sell-image').src = skin.img;
-            document.getElementById('sell-name').innerText = skin.name;
-            document.getElementById('sell-price').innerText = `$${price.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            document.getElementById('sell-commission').innerText = `-$${commission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            document.getElementById('sell-total').innerText = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-
-            document.getElementById('sell-modal').classList.add('active');
-        }
-
-        function closeSellModal() {
-            document.getElementById('sell-modal').classList.remove('active');
-            skinToSellIndex = null;
-        }
-
-        function confirmSellSkin() {
-            if (skinToSellIndex === null) return;
-            
-            const skin = userInventory[skinToSellIndex];
-            const price = skin.price;
-            const commission = price * 0.04;
-            const totalGain = price - commission;
-
-            userBalance += totalGain;
-            updateBalanceUI();
-
-            if (selectedUserSkin && selectedUserSkin.indexInInv === skinToSellIndex) {
-                removeSelectedUserSkin();
-            }
-
-            userInventory.splice(skinToSellIndex, 1);
-            
-            renderUserInventory();
-            closeSellModal();
-            saveToStorage(); // Зберігаємо стан після продажу
-        }
-
-        // ==========================================
-        // 👤 ФУНКЦІОНАЛ ПРОФІЛЮ КОРИСТУВАЧА
-        // ==========================================
-        function openProfileModal() {
-            if (isUpgrading) return;
-
-            let totalWorth = 0;
-            let bestSkin = null;
-
-            userInventory.forEach(skin => {
-                totalWorth += skin.price;
-                if (!bestSkin || skin.price > bestSkin.price) {
-                    bestSkin = skin;
-                }
-            });
-
-            document.getElementById('p-stat-count').innerText = userInventory.length;
-            document.getElementById('p-stat-worth').innerText = `$${totalWorth.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            document.getElementById('p-stat-best').innerText = bestSkin ? `${bestSkin.name} ($${bestSkin.price.toLocaleString('en-US')})` : "Немає";
-            
-            const btnWithdraw = document.getElementById('btn-steam-action');
-            if (userInventory.length === 0) {
-                btnWithdraw.disabled = true;
-                btnWithdraw.innerText = "Немає скінів для виведення";
-            } else {
-                btnWithdraw.disabled = false;
-                btnWithdraw.innerText = "Вивести скіни на Steam";
-            }
-
-            document.getElementById('profile-modal').classList.add('active');
-        }
-
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.remove('active');
-        }
-
-        function closeProfileModalOutside(event) {
-            if (event.target === document.getElementById('profile-modal')) {
-                closeProfileModal();
-            }
-        }
-
-        // СПРАВЖНЄ ЗАВАНТАЖЕННЯ АВАТАРКИ З ПРИСТРОЮ ТЕЛЕФОНУ
-        function loadAvatarFromDevice(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imageUrl = e.target.result;
-                    
-                    savedAvatar = imageUrl; // Запам'ятовуємо Base64 рядок картинки
-                    
-                    // Оновлюємо аватарку в профілі та в шапці одночасно
-                    document.getElementById('profile-avatar-display').style.backgroundImage = `url('${imageUrl}')`;
-                    document.getElementById('header-avatar').style.backgroundImage = `url('${imageUrl}')`;
-                    
-                    saveToStorage(); // Зберігаємо фото в пам'ять браузера
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function withdrawToSteam() {
-            if (userInventory.length === 0) return;
-
-            const btnWithdraw = document.getElementById('btn-steam-action');
-            btnWithdraw.disabled = true;
-            btnWithdraw.innerText = "З'єднання зі Steam...";
-
-            setTimeout(() => {
-                btnWithdraw.innerText = "Надсилання пропозиції обміну...";
-                
-                setTimeout(() => {
-                    closeProfileModal();
-                    
-                    const modal = document.getElementById('result-modal');
-                    const title = document.getElementById('m-title');
-                    const body = document.getElementById('m-body');
-
-                    title.innerText = "ОБМІН НАДІСЛАНО!";
-                    title.className = "m-status m-success";
-                    body.innerHTML = `
-                        <p style="margin-bottom: 10px;">Усі скіни успішно відправлені на ваш аккаунт.</p>
-                        <div style="background: #171a21; border-radius: 6px; padding: 12px; margin: 15px 0; border: 1px solid #66c0f4; color: #66c0f4; font-size: 12px; font-weight: bold;">
-                            Перевірте ваші мобільні підтвердження Steam Guard!
-                        </div>
-                    `;
-
-                    userInventory = [];
-                    renderUserInventory();
-                    removeSelectedUserSkin();
-                    
-                    saveToStorage(); // Зберігаємо порожній інвентар після виведення
-                    modal.classList.add('active');
-                }, 1500);
-
-            }, 1500);
-        }
-    </script>
+    <div class="content">${body}</div>`;
+  document.getElementById('desktop').appendChild(win);
+  dragify(win);
+  win.addEventListener('mousedown',()=>bringFront(win));
+  bringFront(win);
+
+  const a=apps.find(x=>x.id===id);
+  const tb=document.createElement('button');
+  tb.className='task-btn active';tb.dataset.app=id;tb.title=title;tb.innerHTML=icon;
+  tb.onclick=()=>toggleWin(id);
+  taskApps.appendChild(tb);
+  return win;
+}
+function getWin(id){return document.querySelector(`.window[data-id="${id}"]`)}
+function bringFront(w){z++;w.style.zIndex=z}
+function openApp(id){
+  startMenu.classList.remove('open');
+  let existing=getWin(id);
+  if(existing){existing.classList.add('show');bringFront(existing);syncTask();return}
+  const a=apps.find(x=>x.id===id);
+  let body='',w=650,h=430;
+  if(id==='notes'){
+    body=`<textarea id="noteArea" class="note" placeholder="Пиши тут...">${escapeHTML(localStorage.getItem('sewa_notes')||'Ласкаво просимо у SeWa Notes!')}</textarea>`;
+  } else if(id==='calc'){
+    body=`<div class="calc">
+      <div class="calc-display" id="calcDisplay">0</div>
+      ${['C','±','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','⌫','='].map(v=>`<button ${['÷','×','−','+','='].includes(v)?'class="accent"':''} onclick="calcPress('${v}')">${v}</button>`).join('')}
+    </div>`; w=390;h=520;
+  } else if(id==='terminal'){
+    body=`<div class="terminal" id="terminalBox">
+      <div class="term-line">SeWa OS Terminal v1.0</div>
+      <div class="term-line">Введи "help" для списку команд.</div>
+      <div id="termOut"></div>
+      <div class="term-row"><span class="prompt">sewa@os:~$</span><input class="term-input" id="termInput" autocomplete="off"></div>
+    </div>`;
+  } else if(id==='settings'){
+    body=`<div class="settings">
+      <div class="sidebar">
+        <div class="side-item active">Персоналізація</div>
+        <div class="side-item">Система</div>
+        <div class="side-item">Про SeWa OS</div>
+      </div>
+      <div class="setting-page">
+        <h2 style="margin-top:0">Персоналізація</h2>
+        <div class="setting-card"><b>Акцентний колір</b><div class="swatches">
+          <div class="swatch" style="background:#7c3aed" onclick="setAccent('#7c3aed')"></div>
+          <div class="swatch" style="background:#2563eb" onclick="setAccent('#2563eb')"></div>
+          <div class="swatch" style="background:#22c55e" onclick="setAccent('#22c55e')"></div>
+          <div class="swatch" style="background:#ef4444" onclick="setAccent('#ef4444')"></div>
+          <div class="swatch" style="background:#f59e0b" onclick="setAccent('#f59e0b')"></div>
+        </div></div>
+        <div class="setting-card"><b>Шпалери</b><div class="wallpapers">
+          <div class="wall w1" onclick="setWall(1)"></div>
+          <div class="wall w2" onclick="setWall(2)"></div>
+          <div class="wall w3" onclick="setWall(3)"></div>
+        </div></div>
+        <div class="setting-card"><b>SeWa OS</b><p style="color:var(--muted)">Версія 1.0 Web Edition. Усі налаштування зберігаються у браузері.</p></div>
+      </div>
+    </div>`;
+  } else if(id==='files'){
+    body=`<div class="files">
+      <div class="sidebar">
+        <div class="side-item active">🏠 Головна</div>
+        <div class="side-item">🖥 Робочий стіл</div>
+        <div class="side-item">📄 Документи</div>
+        <div class="side-item">⬇ Завантаження</div>
+      </div>
+      <div class="file-list">
+        <div class="file"><div class="ficon">📁</div>Документи</div>
+        <div class="file"><div class="ficon">📁</div>Фото</div>
+        <div class="file"><div class="ficon">📁</div>Проєкти</div>
+        <div class="file" ondblclick="openApp('notes')"><div class="ficon">📝</div>notes.txt</div>
+        <div class="file"><div class="ficon">💿</div>SeWa OS</div>
+      </div>
+    </div>`;
+  } else if(id==='browser'){
+    body=`<div class="browser">
+      <div class="browserbar"><button onclick="toast('Назад')">←</button><button onclick="toast('Оновлено')">↻</button>
+      <input id="urlBar" value="sewa://home"><button onclick="browserGo()">Перейти</button></div>
+      <div class="browserpage" id="browserPage"><div><h1>SeWa <b>Browser</b></h1><p>Вбудований демонстраційний браузер SeWa OS. Введи адресу або пошуковий запит.</p></div></div>
+    </div>`;
+  } else if(id==='about'){
+    body=`<div class="pad" style="display:grid;place-items:center;height:100%"><div class="system-card">
+      <div class="system-logo">SeWa <b>OS</b></div><h2>Web Edition 1.0</h2>
+      <p style="color:var(--muted);line-height:1.7">Міні-операційна система, створена повністю на HTML, CSS та JavaScript. Працює прямо у браузері без встановлення.</p>
+      <p><b>Користувач:</b> SeWa<br><b>Тип:</b> Web Desktop<br><b>Build:</b> 2026.09</p>
+    </div></div>`;
+  }
+  const win=makeWindow(id,a.name,a.icon,body,w,h);
+  if(id==='notes'){
+    document.getElementById('noteArea').addEventListener('input',e=>localStorage.setItem('sewa_notes',e.target.value));
+  }
+  if(id==='terminal') initTerminal();
+}
+function closeWin(id){const w=getWin(id);if(w)w.remove();document.querySelector(`.task-btn[data-app="${id}"]`)?.remove()}
+function minimizeWin(id){getWin(id)?.classList.remove('show');syncTask()}
+function maximizeWin(id){const w=getWin(id);if(!w)return;w.classList.toggle('max');bringFront(w)}
+function toggleWin(id){const w=getWin(id);if(!w)return;if(w.classList.contains('show'))w.classList.remove('show');else{w.classList.add('show');bringFront(w)}syncTask()}
+function syncTask(){
+  document.querySelectorAll('#taskApps .task-btn').forEach(b=>{
+    b.classList.toggle('active',getWin(b.dataset.app)?.classList.contains('show'))
+  })
+}
+function dragify(win){
+  const bar=win.querySelector('.titlebar');let drag=false,ox=0,oy=0;
+  bar.addEventListener('mousedown',e=>{
+    if(e.target.tagName==='BUTTON'||win.classList.contains('max'))return;
+    drag=true;const r=win.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;bringFront(win)
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    win.style.left=Math.max(0,Math.min(innerWidth-120,e.clientX-ox))+'px';
+    win.style.top=Math.max(0,Math.min(innerHeight-100,e.clientY-oy))+'px';
+  });
+  document.addEventListener('mouseup',()=>drag=false);
+}
+function escapeHTML(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+let calcExpr='';
+function calcPress(v){
+  const d=document.getElementById('calcDisplay');if(!d)return;
+  if(v==='C'){calcExpr='';d.textContent='0';return}
+  if(v==='⌫'){calcExpr=calcExpr.slice(0,-1);d.textContent=calcExpr||'0';return}
+  if(v==='±'){if(calcExpr)calcExpr=String(-Number(calcExpr));d.textContent=calcExpr||'0';return}
+  if(v==='%'){if(calcExpr)calcExpr=String(Number(calcExpr)/100);d.textContent=calcExpr||'0';return}
+  if(v==='='){
+    try{
+      const safe=calcExpr.replaceAll('×','*').replaceAll('÷','/').replaceAll('−','-');
+      if(!/^[0-9+\-*/.() ]+$/.test(safe))throw 0;
+      calcExpr=String(Function('"use strict";return ('+safe+')')());
+      d.textContent=calcExpr;
+    }catch{d.textContent='Error';calcExpr=''}
+    return;
+  }
+  calcExpr+=v;d.textContent=calcExpr;
+}
+function initTerminal(){
+  const input=document.getElementById('termInput');
+  input.focus();
+  input.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;
+    const cmd=input.value.trim();printTerm(`sewa@os:~$ ${cmd}`);
+    runCommand(cmd);input.value='';
+  });
+}
+function printTerm(t){const o=document.getElementById('termOut');const l=document.createElement('div');l.className='term-line';l.textContent=t;o.appendChild(l);document.getElementById('terminalBox').scrollTop=99999}
+function runCommand(cmd){
+  const [c,...args]=cmd.toLowerCase().split(' ');
+  const commands={
+    help:'Команди: help, clear, date, echo, whoami, version, apps, open [app], reboot',
+    date:new Date().toString(),
+    whoami:'SeWa',
+    version:'SeWa OS Web Edition 1.0 (build 2026.09)',
+    apps:'browser, files, notes, calc, terminal, settings, about'
+  };
+  if(c==='clear'){document.getElementById('termOut').innerHTML='';return}
+  if(c==='echo'){printTerm(args.join(' '));return}
+  if(c==='open'){if(apps.some(a=>a.id===args[0]))openApp(args[0]);else printTerm('App not found.');return}
+  if(c==='reboot'){location.reload();return}
+  printTerm(commands[c]??`Command not found: ${cmd}`);
+}
+function browserGo(){
+  const q=document.getElementById('urlBar').value.trim();
+  const p=document.getElementById('browserPage');
+  if(!q)return;
+  if(q.startsWith('sewa://')){
+    p.innerHTML=`<div><h1>SeWa <b>Browser</b></h1><p>Відкрита внутрішня сторінка: ${escapeHTML(q)}</p></div>`;
+  }else{
+    const target=q.startsWith('http://')||q.startsWith('https://')?q:'https://www.google.com/search?q='+encodeURIComponent(q);
+    window.open(target,'_blank');
+    toast('Відкрито у новій вкладці');
+  }
+}
+function setAccent(c){document.documentElement.style.setProperty('--accent',c);localStorage.setItem('sewa_accent',c);toast('Колір змінено')}
+function setWall(n){
+  const d=document.getElementById('desktop');d.classList.remove('wallpaper-2','wallpaper-3');
+  if(n===2)d.classList.add('wallpaper-2');if(n===3)d.classList.add('wallpaper-3');
+  localStorage.setItem('sewa_wall',n);toast('Шпалери змінено')
+}
+function applyPrefs(){
+  const c=localStorage.getItem('sewa_accent');if(c)setAccent(c);
+  const w=Number(localStorage.getItem('sewa_wall')||1);setWall(w);
+}
+function fakePower(){
+  startMenu.classList.remove('open');
+  document.getElementById('boot').style.display='flex';
+  document.getElementById('boot').style.opacity='1';
+  setTimeout(()=>location.reload(),900)
+}
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock').innerHTML=`${n.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})}<br>${n.toLocaleDateString('uk-UA')}`;
+}
+setInterval(updateClock,1000);updateClock();
+
+window.addEventListener('load',()=>{
+  const boot=document.getElementById('boot');
+  applyPrefs();
+  setTimeout(()=>{boot.style.opacity='0';setTimeout(()=>boot.style.display='none',650)},1100);
+});
+</script>
 </body>
 </html>
