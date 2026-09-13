@@ -3,529 +3,453 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#090b12">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SeWa OS">
-<title>SeWa OS</title>
+<title>SeWa OS Mobile</title>
 <style>
 :root{
   --accent:#7c3aed;
-  --accent2:#2563eb;
-  --bg:#07080d;
-  --panel:rgba(15,17,24,.76);
-  --panel2:rgba(255,255,255,.075);
-  --text:#f7f8fb;
-  --muted:#a1a7b3;
-  --border:rgba(255,255,255,.10);
-  --shadow:0 24px 80px rgba(0,0,0,.42);
-  --radius:18px;
+  --text:#fff;
+  --muted:rgba(255,255,255,.68);
+  --glass:rgba(20,20,24,.58);
+  --glass2:rgba(255,255,255,.12);
+  --border:rgba(255,255,255,.12);
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05060a;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
 button,input,textarea{font:inherit}
 button{color:inherit}
 .hidden{display:none!important}
-.glass{background:var(--panel);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border:1px solid var(--border);box-shadow:var(--shadow)}
-#boot{
- position:fixed;inset:0;z-index:10000;background:
- radial-gradient(circle at 50% 20%,rgba(124,58,237,.16),transparent 30%),
- #05060a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:.45s;
-}
-.logo{font-size:44px;font-weight:900;letter-spacing:-2px}
-.logo b{color:var(--accent)}
-.loader{width:190px;height:4px;background:#20232d;border-radius:999px;overflow:hidden}
-.loader span{display:block;height:100%;width:38%;background:linear-gradient(90deg,var(--accent),var(--accent2));animation:load 1s infinite ease}
-@keyframes load{0%{transform:translateX(-130%)}100%{transform:translateX(370%)}}
 
-#os{position:fixed;inset:0;overflow:hidden;background:#090b12}
+#boot{
+ position:fixed;inset:0;z-index:99999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;
+ transition:.4s ease;
+}
+.appleMark{font-size:58px;font-weight:900;letter-spacing:-4px}
+.appleMark b{color:var(--accent)}
+.bootbar{width:145px;height:4px;background:#222;border-radius:999px;overflow:hidden;margin-top:18px}
+.bootbar span{display:block;height:100%;width:34%;background:#fff;border-radius:999px;animation:load 1s infinite ease}
+@keyframes load{from{transform:translateX(-120%)}to{transform:translateX(420%)}}
+
+#phone{
+ position:fixed;inset:0;overflow:hidden;background:#000;
+}
 #wallpaper{
  position:absolute;inset:0;
  background:
- radial-gradient(circle at 18% 18%,rgba(124,58,237,.30),transparent 25%),
- radial-gradient(circle at 80% 75%,rgba(37,99,235,.24),transparent 28%),
- linear-gradient(145deg,#090b13,#10172b 60%,#080910);
- transition:.3s;
+ radial-gradient(circle at 25% 15%,rgba(124,58,237,.45),transparent 30%),
+ radial-gradient(circle at 78% 72%,rgba(37,99,235,.34),transparent 30%),
+ linear-gradient(165deg,#151527,#09090d 60%,#020204);
 }
 #wallpaper.w2{
  background:
- radial-gradient(circle at 50% -10%,rgba(255,255,255,.12),transparent 30%),
- linear-gradient(145deg,#0a0a0a,#202020 52%,#090909);
+ radial-gradient(circle at 20% 20%,rgba(255,100,80,.38),transparent 28%),
+ radial-gradient(circle at 80% 74%,rgba(240,60,160,.32),transparent 28%),
+ linear-gradient(165deg,#2a1020,#0e0b18 62%,#050507);
 }
 #wallpaper.w3{
  background:
- radial-gradient(circle at 22% 25%,rgba(34,197,94,.24),transparent 24%),
- radial-gradient(circle at 75% 68%,rgba(6,182,212,.20),transparent 25%),
- linear-gradient(145deg,#03110d,#061822 65%,#03100d);
+ radial-gradient(circle at 30% 20%,rgba(40,220,150,.30),transparent 26%),
+ radial-gradient(circle at 78% 72%,rgba(60,180,255,.25),transparent 30%),
+ linear-gradient(165deg,#071714,#071018 60%,#020404);
 }
-#wallpaper.w4{
- background:
- radial-gradient(circle at 70% 20%,rgba(236,72,153,.20),transparent 25%),
- radial-gradient(circle at 20% 75%,rgba(249,115,22,.16),transparent 25%),
- linear-gradient(145deg,#16080f,#161029 60%,#07070b);
-}
-
-#lock{
- position:absolute;inset:0;z-index:9500;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
- padding:calc(var(--safe-top) + 42px) 24px calc(var(--safe-bottom) + 30px);
- background:rgba(4,5,9,.18);backdrop-filter:blur(2px);
- transition:.45s cubic-bezier(.2,.8,.2,1);
-}
-#lock.unlock{transform:translateY(-105%);opacity:.2}
-.lock-top{text-align:center}
-#lockTime{font-size:78px;font-weight:300;letter-spacing:-5px;line-height:1}
-#lockDate{margin-top:10px;color:#e6e8ee;font-size:18px}
-.lock-card{width:min(420px,92vw);padding:16px 18px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(20px)}
-.lock-card b{display:block;margin-bottom:4px}
-.lock-card p{margin:0;color:#c6cad3;font-size:13px}
-.lock-bottom{text-align:center}
-.unlock-btn{
- border:0;border-radius:999px;padding:13px 24px;background:rgba(255,255,255,.12);backdrop-filter:blur(12px);font-weight:700;
-}
-.unlock-hint{margin-top:12px;font-size:12px;color:#c7cbd4}
 
 #statusbar{
- position:absolute;top:0;left:0;right:0;height:calc(28px + var(--safe-top));padding:var(--safe-top) 14px 0;z-index:5000;
- display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;pointer-events:none;
+ position:absolute;top:0;left:0;right:0;height:calc(28px + var(--safe-top));padding-top:var(--safe-top);
+ display:flex;align-items:center;justify-content:space-between;padding-left:16px;padding-right:16px;z-index:7000;
+ font-size:12px;font-weight:700;
 }
-.status-right{display:flex;gap:8px;align-items:center}
+#statusRight{display:flex;gap:7px;align-items:center}
 
-#desktop{
- position:absolute;inset:calc(28px + var(--safe-top)) 0 calc(68px + var(--safe-bottom)) 0;
- padding:20px 18px 18px;overflow:auto;overscroll-behavior:none;
+#lockscreen{
+ position:absolute;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ padding:calc(var(--safe-top) + 58px) 22px calc(var(--safe-bottom) + 28px);
+ background:rgba(0,0,0,.05);
+ transition:.42s cubic-bezier(.2,.8,.2,1);
 }
-#desktopIcons{
- display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:18px 12px;max-width:560px;
+#lockscreen.unlock{transform:translateY(-100%);opacity:.1}
+.lockDate{font-size:17px;font-weight:600;text-shadow:0 1px 10px rgba(0,0,0,.4)}
+.lockTime{font-size:86px;font-weight:300;letter-spacing:-7px;line-height:.95;margin-top:6px;text-shadow:0 1px 18px rgba(0,0,0,.32)}
+.lockWidgets{width:100%;display:flex;gap:12px;margin-top:24px}
+.widget{
+ flex:1;min-height:106px;border-radius:26px;padding:15px;background:rgba(255,255,255,.12);backdrop-filter:blur(28px);
+ border:1px solid rgba(255,255,255,.13)
 }
-.app-icon{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:12px;cursor:pointer}
-.app-icon-box{
- width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:28px;
- background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.055));
- border:1px solid rgba(255,255,255,.11);box-shadow:0 10px 30px rgba(0,0,0,.22);
+.widget .small{font-size:12px;color:rgba(255,255,255,.7)}
+.widget .big{font-size:28px;font-weight:700;margin-top:4px}
+.lockBottom{width:100%;text-align:center}
+.lockActions{display:flex;justify-content:space-between;padding:0 14px}
+.circleBtn{
+ width:50px;height:50px;border-radius:50%;border:0;background:rgba(20,20,20,.45);backdrop-filter:blur(18px);display:grid;place-items:center;font-size:20px
 }
-.app-icon:active .app-icon-box{transform:scale(.94)}
-.desktop-widget{
- margin-top:26px;width:min(100%,520px);border-radius:24px;padding:18px;background:rgba(255,255,255,.075);border:1px solid var(--border);backdrop-filter:blur(18px);
+.homeIndicator{width:132px;height:5px;background:#fff;border-radius:999px;margin:22px auto 2px;opacity:.95}
+.swipeText{font-size:12px;color:rgba(255,255,255,.68);margin-top:8px}
+
+#home{
+ position:absolute;inset:calc(28px + var(--safe-top)) 0 0;z-index:1000;padding:22px 18px calc(105px + var(--safe-bottom));
+ overflow:auto;
 }
-.desktop-widget .big{font-size:30px;font-weight:800}
-.desktop-widget .muted{color:var(--muted);font-size:13px}
+.topWidgets{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-bottom:26px}
+.homeWidget{
+ min-height:138px;border-radius:28px;padding:16px;background:rgba(255,255,255,.10);backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.12)
+}
+.homeWidget.clockW{display:flex;flex-direction:column;justify-content:space-between}
+.homeWidget .label{font-size:12px;color:var(--muted)}
+.homeWidget .main{font-size:30px;font-weight:800}
+.homeWidget .sub{font-size:13px;color:var(--muted)}
+.appGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 10px}
+.appIcon{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;font-size:11px;cursor:pointer}
+.iconBox{
+ width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-size:29px;
+ background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.09));
+ box-shadow:0 12px 32px rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.14)
+}
+.appIcon:active .iconBox{transform:scale(.91)}
+.pageDots{display:flex;gap:5px;justify-content:center;margin:26px 0 10px}
+.pageDots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.38)}
+.pageDots span.active{background:#fff}
 
 #dock{
- position:absolute;left:50%;bottom:calc(8px + var(--safe-bottom));transform:translateX(-50%);z-index:5500;
- height:58px;min-width:260px;max-width:calc(100% - 18px);padding:7px 9px;border-radius:22px;
- display:flex;align-items:center;gap:8px;background:rgba(16,18,25,.72);backdrop-filter:blur(24px);border:1px solid var(--border);box-shadow:var(--shadow)
+ position:absolute;left:10px;right:10px;bottom:calc(10px + var(--safe-bottom));height:76px;z-index:3000;
+ border-radius:30px;background:rgba(255,255,255,.14);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.12);
+ display:flex;align-items:center;justify-content:space-around;padding:8px 12px
 }
-.dock-btn{width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.07);display:grid;place-items:center;font-size:21px;cursor:pointer}
-.dock-btn:active{transform:scale(.95)}
-.dock-spacer{flex:1}
-#desktopModeStart{font-weight:900;font-size:13px;padding:0 12px;width:auto}
+.dockIcon{width:58px;height:58px;border:0;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.09));font-size:28px}
 
-#startMenu{
- position:absolute;left:14px;bottom:calc(76px + var(--safe-bottom));z-index:6000;width:min(380px,calc(100% - 28px));
- border-radius:24px;padding:14px;opacity:0;transform:translateY(15px) scale(.98);pointer-events:none;transition:.2s;
- background:rgba(16,18,26,.88);backdrop-filter:blur(28px);border:1px solid var(--border);box-shadow:var(--shadow)
+.app{
+ position:absolute;inset:0;z-index:5000;background:#0a0a0d;transform:translateY(100%);opacity:0;pointer-events:none;
+ transition:.34s cubic-bezier(.2,.8,.2,1);padding-top:var(--safe-top);
 }
-#startMenu.open{opacity:1;transform:none;pointer-events:auto}
-.search{width:100%;height:43px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.065);outline:0;color:white;padding:0 14px}
-.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:14px 4px 8px}
-.menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.menu-app{border-radius:13px;padding:10px 5px;text-align:center;font-size:11px;cursor:pointer}
-.menu-app:hover{background:rgba(255,255,255,.07)}
-.menu-app .mi{font-size:23px;margin-bottom:5px}
-.menu-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
-.user-chip{display:flex;gap:10px;align-items:center}
-.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:900}
+.app.open{transform:none;opacity:1;pointer-events:auto}
+.appHeader{
+ height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.08);
+ background:rgba(10,10,13,.88);backdrop-filter:blur(22px);position:relative;z-index:2
+}
+.appHeader .title{font-size:17px;font-weight:700}
+.headerBtn{border:0;background:transparent;font-size:18px;padding:8px}
+.appBody{height:calc(100% - 56px - var(--safe-bottom));overflow:auto;padding-bottom:calc(20px + var(--safe-bottom))}
+.appHomeIndicator{position:absolute;bottom:calc(7px + var(--safe-bottom));left:50%;transform:translateX(-50%);width:132px;height:5px;background:#fff;border-radius:999px;z-index:10}
 
-.window{
- position:absolute;left:80px;top:70px;width:680px;height:450px;min-width:300px;min-height:220px;z-index:100;
- border-radius:18px;overflow:hidden;background:rgba(16,18,26,.94);backdrop-filter:blur(24px);border:1px solid var(--border);box-shadow:var(--shadow);
- resize:both;display:none;
-}
-.window.show{display:block}
-.window.max{left:8px!important;top:calc(30px + var(--safe-top))!important;width:calc(100% - 16px)!important;height:calc(100% - 106px - var(--safe-bottom))!important;resize:none}
-.titlebar{height:48px;display:flex;align-items:center;padding-left:14px;border-bottom:1px solid var(--border);cursor:move}
-.title{flex:1;font-size:13px;font-weight:700}
-.win-actions{display:flex;height:100%}
-.win-actions button{width:46px;border:0;background:transparent;cursor:pointer}
-.win-actions button:hover{background:rgba(255,255,255,.08)}
-.win-actions .close:hover{background:#ef4444}
-.content{height:calc(100% - 48px);overflow:auto}
-textarea.note{width:100%;height:100%;resize:none;border:0;outline:0;background:#0b0d13;color:white;padding:18px;font-size:15px;line-height:1.6}
-.calc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px;height:100%}
-.calc-display{grid-column:1/-1;height:78px;border-radius:15px;background:#080a0f;border:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;padding:0 16px;font-size:30px;overflow:hidden}
-.calc button{border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.06);cursor:pointer;font-size:17px}
-.calc button.accent{background:color-mix(in srgb,var(--accent) 65%,#111)}
-.terminal{height:100%;background:#040509;padding:14px;color:#d6ffd8;font:13px/1.5 Consolas,monospace;overflow:auto}
-.term-row{display:flex;gap:8px}
-.term-input{flex:1;background:transparent;border:0;outline:0;color:#d6ffd8;font:inherit}
-.prompt{color:#c4b5fd}
-.settings{display:grid;grid-template-columns:190px 1fr;height:100%}
-.sidebar{border-right:1px solid var(--border);padding:12px}
-.side-item{padding:11px;border-radius:11px;font-size:13px;margin-bottom:4px}
-.side-item.active,.side-item:hover{background:rgba(255,255,255,.07)}
-.setting-page{padding:20px;overflow:auto}
-.card{border:1px solid var(--border);background:rgba(255,255,255,.04);padding:16px;border-radius:16px;margin:12px 0}
-.swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.swatch{width:38px;height:38px;border-radius:50%;border:3px solid rgba(255,255,255,.16);cursor:pointer}
-.wallpapers{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
-.wall{aspect-ratio:16/9;border-radius:12px;border:2px solid var(--border);cursor:pointer}
-.wprev1{background:linear-gradient(145deg,#090b13,#10172b)}
-.wprev2{background:linear-gradient(145deg,#090909,#252525)}
-.wprev3{background:linear-gradient(145deg,#03110d,#061822)}
-.wprev4{background:linear-gradient(145deg,#16080f,#161029)}
-.files{display:grid;grid-template-columns:180px 1fr;height:100%}
-.file-list{padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;align-content:start}
-.file{padding:14px 8px;border-radius:13px;text-align:center;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:12px}
-.ficon{font-size:28px;margin-bottom:8px}
-.browser{display:flex;flex-direction:column;height:100%}
-.browserbar{display:flex;gap:8px;padding:9px;border-bottom:1px solid var(--border)}
-.browserbar input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:11px;color:white;padding:9px 12px;outline:0}
-.browserbar button{border:0;border-radius:10px;background:rgba(255,255,255,.08);padding:0 12px}
-.browserpage{flex:1;display:grid;place-items:center;text-align:center;padding:26px}
-.browserpage h1{font-size:40px;margin:0 0 8px}
-.browserpage b{color:var(--accent)}
-.browserpage p{max-width:520px;color:var(--muted)}
-.gallery{padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.photo{aspect-ratio:1;border-radius:14px;background:
- linear-gradient(145deg,rgba(124,58,237,.55),rgba(37,99,235,.35));border:1px solid var(--border);display:grid;place-items:center;font-size:28px}
-.music{padding:20px;display:grid;place-items:center;height:100%;text-align:center}
-.album{width:180px;aspect-ratio:1;border-radius:26px;background:linear-gradient(145deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:64px;box-shadow:var(--shadow)}
-.music-controls{display:flex;gap:12px;margin-top:20px}
-.music-controls button{width:54px;height:54px;border-radius:50%;border:1px solid var(--border);background:rgba(255,255,255,.08);font-size:19px}
-.system-card{max-width:620px;padding:22px;border:1px solid var(--border);background:rgba(255,255,255,.04);border-radius:18px}
-.system-logo{font-size:52px;font-weight:900;letter-spacing:-3px}
-.system-logo b{color:var(--accent)}
+.notesArea{width:100%;height:100%;border:0;outline:0;resize:none;background:#111116;color:#fff;padding:18px;font-size:16px;line-height:1.6}
+.calc{padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;height:100%}
+.calcDisplay{grid-column:1/-1;height:100px;display:flex;align-items:flex-end;justify-content:flex-end;font-size:48px;padding:10px}
+.calc button{border:0;border-radius:50%;aspect-ratio:1;background:#2a2a2d;font-size:24px}
+.calc .op{background:#ff9f0a}
+.calc .light{background:#a5a5a8;color:#000}
+.settingsList{padding:14px}
+.group{background:#1b1b1f;border-radius:18px;overflow:hidden;margin-bottom:16px}
+.settingRow{padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between}
+.settingRow:last-child{border-bottom:0}
+.settingRow .left{display:flex;gap:12px;align-items:center}
+.settingsIcon{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:#2b2b30}
+.switch{width:48px;height:28px;border-radius:999px;background:#3a3a3d;padding:2px}
+.switch span{display:block;width:24px;height:24px;background:#fff;border-radius:50%;transition:.2s}
+.switch.on{background:#34c759}
+.switch.on span{transform:translateX(20px)}
+.browserTop{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:8px}
+.browserTop input{flex:1;background:#1d1d22;border:0;color:#fff;padding:11px 13px;border-radius:14px;outline:0}
+.browserTop button{border:0;border-radius:14px;background:#2b2b31;padding:0 14px}
+.browserPage{min-height:calc(100% - 60px);display:grid;place-items:center;text-align:center;padding:26px}
+.browserPage h1{font-size:38px;margin:0}
+.browserPage b{color:var(--accent)}
+.browserPage p{color:var(--muted);max-width:320px}
+.filesList{padding:14px}
+.fileRow{display:flex;gap:12px;align-items:center;padding:14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.fileIcon{width:42px;height:42px;border-radius:12px;background:#202027;display:grid;place-items:center;font-size:22px}
+.fileRow .meta{font-size:12px;color:var(--muted);margin-top:2px}
+.gallery{padding:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.gallery .photo{aspect-ratio:1;background:linear-gradient(145deg,var(--accent),#3b82f6);display:grid;place-items:center;font-size:28px}
+.musicBody{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px}
+.album{width:230px;aspect-ratio:1;border-radius:28px;background:linear-gradient(145deg,var(--accent),#2563eb);display:grid;place-items:center;font-size:76px;box-shadow:0 28px 80px rgba(0,0,0,.45)}
+.musicBtns{display:flex;gap:18px;justify-content:center;margin-top:24px}
+.musicBtns button{width:62px;height:62px;border-radius:50%;border:0;background:#242429;font-size:22px}
+.terminal{height:100%;background:#000;color:#d9ffd9;padding:14px;font:13px/1.55 Menlo,Consolas,monospace;overflow:auto}
+.termRow{display:flex;gap:6px}
+.termInput{flex:1;background:transparent;border:0;outline:0;color:#d9ffd9;font:inherit}
 
 #controlCenter{
- position:absolute;right:12px;top:calc(34px + var(--safe-top));width:min(340px,calc(100% - 24px));z-index:7000;padding:14px;border-radius:24px;
- opacity:0;transform:translateY(-12px) scale(.98);pointer-events:none;transition:.2s;background:rgba(16,18,26,.9);backdrop-filter:blur(26px);border:1px solid var(--border);box-shadow:var(--shadow)
+ position:absolute;inset:0;z-index:8500;background:rgba(0,0,0,.25);backdrop-filter:blur(28px);padding:calc(var(--safe-top) + 44px) 14px calc(var(--safe-bottom) + 18px);
+ opacity:0;pointer-events:none;transform:translateY(-100%);transition:.28s ease;
 }
-#controlCenter.open{opacity:1;transform:none;pointer-events:auto}
-.toggle-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.cc-btn{padding:14px;border:1px solid var(--border);background:rgba(255,255,255,.055);border-radius:16px;text-align:left}
-.cc-btn.active{background:color-mix(in srgb,var(--accent) 35%,rgba(255,255,255,.06))}
-.slider-row{margin-top:12px;padding:14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
-.slider-row input{width:100%}
-#notificationCenter{
- position:absolute;left:50%;top:calc(36px + var(--safe-top));transform:translateX(-50%) translateY(-12px);width:min(420px,calc(100% - 24px));z-index:6900;padding:14px;border-radius:24px;
- opacity:0;pointer-events:none;transition:.2s;background:rgba(16,18,26,.9);backdrop-filter:blur(26px);border:1px solid var(--border);box-shadow:var(--shadow)
-}
-#notificationCenter.open{opacity:1;transform:translateX(-50%);pointer-events:auto}
-.notification{padding:13px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid var(--border);margin-top:8px}
-.notification b{font-size:13px}
-.notification p{margin:3px 0 0;color:var(--muted);font-size:12px}
+#controlCenter.open{opacity:1;pointer-events:auto;transform:none}
+.ccGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ccCard{background:rgba(42,42,47,.72);border-radius:24px;padding:16px;border:1px solid rgba(255,255,255,.08)}
+.toggleGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.roundToggle{aspect-ratio:1;border-radius:50%;border:0;background:#3b3b40;font-size:22px}
+.roundToggle.on{background:#0a84ff}
+.slider{width:100%;margin-top:12px}
+.nowPlaying{margin-top:12px;display:flex;gap:12px;align-items:center}
+.miniAlbum{width:58px;height:58px;border-radius:14px;background:linear-gradient(145deg,var(--accent),#2563eb);display:grid;place-items:center;font-size:28px}
 
-#toast{position:absolute;right:14px;bottom:calc(80px + var(--safe-bottom));z-index:9000;padding:12px 15px;border-radius:13px;background:rgba(18,20,29,.95);border:1px solid var(--border);box-shadow:var(--shadow);font-size:13px;transform:translateX(130%);transition:.25s}
-#toast.show{transform:none}
-
-@media(max-width:760px){
-  #desktop{padding:18px 16px 18px}
-  #desktopIcons{grid-template-columns:repeat(4,1fr);gap:20px 8px;max-width:none}
-  .app-icon-box{width:60px;height:60px;border-radius:18px}
-  #dock{width:calc(100% - 18px);justify-content:center}
-  #desktopModeStart{display:none}
-  .dock-btn{flex:1;max-width:58px}
-  .window,.window.max{
-    left:0!important;top:0!important;width:100%!important;height:100%!important;min-width:0;min-height:0;border-radius:0;resize:none;
-    padding-top:var(--safe-top);
-  }
-  .window .titlebar{height:54px;padding-left:14px;background:rgba(12,14,20,.9)}
-  .window .content{height:calc(100% - 54px)}
-  .win-actions button:first-child,.win-actions button:nth-child(2){display:none}
-  .win-actions .close{width:54px;font-size:24px}
-  .settings,.files{grid-template-columns:1fr}
-  .settings .sidebar,.files .sidebar{display:none}
-  .setting-page{padding:16px}
-  .browserbar{padding:8px}
-  .browserbar button:first-child{display:none}
-  .gallery{grid-template-columns:repeat(2,1fr)}
-  #statusbar{pointer-events:auto}
-  #statusClock{cursor:pointer}
-  #statusControls{cursor:pointer}
+#notifications{
+ position:absolute;inset:0;z-index:8400;background:rgba(0,0,0,.18);backdrop-filter:blur(22px);padding:calc(var(--safe-top) + 54px) 14px calc(var(--safe-bottom) + 18px);
+ opacity:0;pointer-events:none;transform:translateY(-100%);transition:.28s ease;
 }
-@media(min-width:761px){
-  #desktopIcons{grid-template-columns:repeat(2,88px)}
+#notifications.open{opacity:1;pointer-events:auto;transform:none}
+.notifTitle{font-size:28px;font-weight:800;margin-bottom:16px}
+.notifCard{padding:14px;border-radius:18px;background:rgba(40,40,44,.70);border:1px solid rgba(255,255,255,.08);margin-bottom:10px}
+.notifCard b{font-size:13px}
+.notifCard p{font-size:13px;color:var(--muted);margin:4px 0 0}
+
+@media(min-width:700px){
+ body::before{
+  content:"SeWa OS Mobile відкривай на телефоні";
+  position:fixed;inset:0;background:#08080a;color:#fff;display:grid;place-items:center;z-index:100000;font-size:24px;font-weight:700;text-align:center;padding:30px
+ }
 }
 </style>
 </head>
 <body>
 <div id="boot">
-  <div class="logo">SeWa <b>OS</b></div>
-  <div class="loader"><span></span></div>
-  <div style="font-size:12px;color:#7f8591">Starting SeWa OS...</div>
+  <div class="appleMark">SeWa <b>OS</b></div>
+  <div class="bootbar"><span></span></div>
 </div>
 
-<div id="os">
+<div id="phone">
   <div id="wallpaper"></div>
 
-  <div id="lock">
-    <div class="lock-top">
-      <div id="lockTime">00:00</div>
-      <div id="lockDate">...</div>
-    </div>
-    <div class="lock-card">
-      <b>SeWa OS готова</b>
-      <p>Торкнися кнопки нижче, щоб перейти на головний екран.</p>
-    </div>
-    <div class="lock-bottom">
-      <button class="unlock-btn" onclick="unlockOS()">Розблокувати</button>
-      <div class="unlock-hint">SeWa OS Mobile Edition</div>
-    </div>
-  </div>
-
   <div id="statusbar">
-    <div id="statusClock">00:00</div>
-    <div class="status-right" id="statusControls">
-      <span>●</span><span>Wi‑Fi</span><span id="batteryText">100%</span>
+    <div id="statusTime">00:00</div>
+    <div id="statusRight"><span>●●●</span><span>Wi‑Fi</span><span>100%</span></div>
+  </div>
+
+  <div id="lockscreen">
+    <div style="width:100%;text-align:center">
+      <div class="lockDate" id="lockDate">...</div>
+      <div class="lockTime" id="lockTime">00:00</div>
+      <div class="lockWidgets">
+        <div class="widget"><div class="small">Погода</div><div class="big">18°</div><div class="small">Мінлива хмарність</div></div>
+        <div class="widget"><div class="small">SeWa OS</div><div class="big">100%</div><div class="small">Система готова</div></div>
+      </div>
+    </div>
+    <div class="lockBottom">
+      <div class="lockActions"><button class="circleBtn">🔦</button><button class="circleBtn">📷</button></div>
+      <div class="swipeText">Проведи вгору, щоб відкрити</div>
+      <div class="homeIndicator"></div>
     </div>
   </div>
 
-  <div id="desktop">
-    <div id="desktopIcons"></div>
-    <div class="desktop-widget">
-      <div class="muted">SEWA OS</div>
-      <div class="big" id="helloTitle">Привіт, SeWa</div>
-      <div class="muted" id="helloSubtitle">Система готова до роботи.</div>
+  <div id="home">
+    <div class="topWidgets">
+      <div class="homeWidget clockW">
+        <div class="label">Сьогодні</div>
+        <div class="main" id="homeGreeting">Добрий день</div>
+        <div class="sub" id="homeDate"></div>
+      </div>
+      <div class="homeWidget">
+        <div class="label">SeWa OS</div>
+        <div class="main">2.0</div>
+        <div class="sub">Mobile Edition</div>
+      </div>
     </div>
-  </div>
 
-  <div id="startMenu">
-    <input class="search" id="search" placeholder="Пошук програм...">
-    <div class="section-label">Програми</div>
-    <div class="menu-grid" id="menuGrid"></div>
-    <div class="menu-footer">
-      <div class="user-chip"><div class="avatar">S</div><div><b>SeWa</b><div style="font-size:11px;color:var(--muted)">Administrator</div></div></div>
-      <button class="dock-btn" onclick="powerMenu()">⏻</button>
-    </div>
-  </div>
-
-  <div id="controlCenter">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b>Центр керування</b><span id="ccTime"></span></div>
-    <div class="toggle-grid">
-      <button class="cc-btn active" onclick="toggleCC(this,'Wi‑Fi')">📶<br><b>Wi‑Fi</b></button>
-      <button class="cc-btn active" onclick="toggleCC(this,'Bluetooth')">🅱️<br><b>Bluetooth</b></button>
-      <button class="cc-btn" onclick="toggleCC(this,'Не турбувати')">🌙<br><b>Не турбувати</b></button>
-      <button class="cc-btn" onclick="toggleCC(this,'Авіарежим')">✈️<br><b>Авіарежим</b></button>
-    </div>
-    <div class="slider-row">Яскравість<input id="brightness" type="range" min="35" max="100" value="100"></div>
-  </div>
-
-  <div id="notificationCenter">
-    <div style="display:flex;justify-content:space-between;align-items:center"><b>Сповіщення</b><button class="dock-btn" style="width:36px;height:36px" onclick="clearNotifications()">✓</button></div>
-    <div id="notifications"></div>
+    <div class="appGrid" id="appGrid"></div>
+    <div class="pageDots"><span class="active"></span><span></span></div>
   </div>
 
   <div id="dock">
-    <button class="dock-btn" id="startBtn">◉</button>
-    <button class="dock-btn" onclick="openApp('browser')">🌐</button>
-    <button class="dock-btn" onclick="openApp('files')">📁</button>
-    <button class="dock-btn" onclick="openApp('notes')">📝</button>
-    <button class="dock-btn" onclick="openApp('settings')">⚙️</button>
-    <div class="dock-spacer"></div>
-    <button class="dock-btn" id="desktopModeStart" onclick="openApp('about')">SeWa OS</button>
+    <button class="dockIcon" onclick="openApp('browser')">🌐</button>
+    <button class="dockIcon" onclick="openApp('files')">📁</button>
+    <button class="dockIcon" onclick="openApp('notes')">📝</button>
+    <button class="dockIcon" onclick="openApp('music')">🎵</button>
   </div>
 
-  <div id="toast">Готово</div>
+  <div id="controlCenter">
+    <div class="ccGrid">
+      <div class="ccCard">
+        <div class="toggleGrid">
+          <button class="roundToggle on" onclick="toggleRound(this)">📶</button>
+          <button class="roundToggle on" onclick="toggleRound(this)">🅱️</button>
+          <button class="roundToggle" onclick="toggleRound(this)">✈️</button>
+          <button class="roundToggle" onclick="toggleRound(this)">📡</button>
+        </div>
+      </div>
+      <div class="ccCard">
+        <b>Музика</b>
+        <div class="nowPlaying"><div class="miniAlbum">🎵</div><div><div>SeWa Track</div><div style="color:var(--muted);font-size:12px">Demo</div></div></div>
+      </div>
+      <div class="ccCard"><b>Яскравість</b><input class="slider" id="brightness" type="range" min="35" max="100" value="100"></div>
+      <div class="ccCard"><b>Гучність</b><input class="slider" type="range" min="0" max="100" value="65"></div>
+    </div>
+    <div class="homeIndicator"></div>
+  </div>
+
+  <div id="notifications">
+    <div class="notifTitle">Сповіщення</div>
+    <div id="notifList"></div>
+    <div class="homeIndicator"></div>
+  </div>
 </div>
 
 <script>
 const apps=[
- {id:'browser',name:'SeWa Browser',icon:'🌐'},
- {id:'files',name:'Файли',icon:'📁'},
- {id:'notes',name:'Нотатки',icon:'📝'},
- {id:'calc',name:'Калькулятор',icon:'🧮'},
- {id:'terminal',name:'Термінал',icon:'⌨️'},
- {id:'gallery',name:'Галерея',icon:'🖼️'},
- {id:'music',name:'Музика',icon:'🎵'},
- {id:'settings',name:'Налаштування',icon:'⚙️'},
- {id:'about',name:'Про систему',icon:'💻'}
+ {id:'browser',name:'Browser',icon:'🌐'},
+ {id:'files',name:'Files',icon:'📁'},
+ {id:'notes',name:'Notes',icon:'📝'},
+ {id:'calc',name:'Calculator',icon:'🧮'},
+ {id:'gallery',name:'Photos',icon:'🖼️'},
+ {id:'music',name:'Music',icon:'🎵'},
+ {id:'terminal',name:'Terminal',icon:'⌨️'},
+ {id:'settings',name:'Settings',icon:'⚙️'}
 ];
-const desktopIds=['browser','files','notes','calc','gallery','music','terminal','settings'];
-let z=100, calcExpr='', locked=true;
-
 const $=s=>document.querySelector(s);
-const wallpaper=$('#wallpaper'), startMenu=$('#startMenu'), controlCenter=$('#controlCenter'), notificationCenter=$('#notificationCenter');
-
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function toast(msg){
- const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>t.classList.remove('show'),1600);
-}
-function notify(title,text){
- const arr=JSON.parse(localStorage.getItem('sewa_notifications')||'[]');
- arr.unshift({title,text,time:new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})});
- localStorage.setItem('sewa_notifications',JSON.stringify(arr.slice(0,8)));renderNotifications();
-}
-function renderNotifications(){
- const arr=JSON.parse(localStorage.getItem('sewa_notifications')||'[]');
- $('#notifications').innerHTML=arr.length?arr.map(n=>`<div class="notification"><b>${escapeHTML(n.title)} · ${n.time}</b><p>${escapeHTML(n.text)}</p></div>`).join(''):
- '<div class="notification"><b>Немає нових сповіщень</b><p>Тут з’являтимуться системні повідомлення.</p></div>';
-}
-function clearNotifications(){localStorage.setItem('sewa_notifications','[]');renderNotifications();toast('Сповіщення очищено')}
+let locked=true, calcExpr='';
 
 function renderApps(){
- const di=$('#desktopIcons'), mg=$('#menuGrid');di.innerHTML='';mg.innerHTML='';
- desktopIds.forEach(id=>{
-  const a=apps.find(x=>x.id===id);
-  const e=document.createElement('div');e.className='app-icon';e.innerHTML=`<div class="app-icon-box">${a.icon}</div><div>${a.name}</div>`;e.onclick=()=>openApp(id);di.appendChild(e);
- });
+ const grid=$('#appGrid');
  apps.forEach(a=>{
-  const e=document.createElement('div');e.className='menu-app';e.innerHTML=`<div class="mi">${a.icon}</div>${a.name}`;e.onclick=()=>openApp(a.id);mg.appendChild(e);
- });
+  const e=document.createElement('div');
+  e.className='appIcon';
+  e.innerHTML=`<div class="iconBox">${a.icon}</div><div>${a.name}</div>`;
+  e.onclick=()=>openApp(a.id);
+  grid.appendChild(e);
+ })
 }
 renderApps();
 
-$('#search').addEventListener('input',e=>{
- [...$('#menuGrid').children].forEach((el,i)=>el.style.display=apps[i].name.toLowerCase().includes(e.target.value.toLowerCase())?'':'none');
-});
-$('#startBtn').onclick=()=>{startMenu.classList.toggle('open');controlCenter.classList.remove('open');notificationCenter.classList.remove('open')};
-$('#statusControls').onclick=()=>{controlCenter.classList.toggle('open');startMenu.classList.remove('open');notificationCenter.classList.remove('open')};
-$('#statusClock').onclick=()=>{notificationCenter.classList.toggle('open');startMenu.classList.remove('open');controlCenter.classList.remove('open')};
-
-$('#desktop').addEventListener('click',()=>{startMenu.classList.remove('open');controlCenter.classList.remove('open');notificationCenter.classList.remove('open')});
-
-function unlockOS(){
- if(!locked)return;locked=false;$('#lock').classList.add('unlock');
- setTimeout(()=>$('#lock').classList.add('hidden'),460);
- if(!localStorage.getItem('sewa_first_unlock')){
-  notify('SeWa OS','Систему успішно запущено. Ласкаво просимо!');
-  localStorage.setItem('sewa_first_unlock','1');
- }
+function appTemplate(id,title,body){
+ let old=document.querySelector(`.app[data-id="${id}"]`);
+ if(old){old.classList.add('open');return old}
+ const app=document.createElement('div');
+ app.className='app';app.dataset.id=id;
+ app.innerHTML=`<div class="appHeader"><button class="headerBtn" onclick="closeApp('${id}')">‹</button><div class="title">${title}</div><button class="headerBtn">•••</button></div><div class="appBody">${body}</div><div class="appHomeIndicator"></div>`;
+ $('#phone').appendChild(app);
+ requestAnimationFrame(()=>app.classList.add('open'));
+ return app;
 }
-function powerMenu(){
- startMenu.classList.remove('open');
- if(confirm('Перезапустити SeWa OS?'))location.reload();
-}
-
-function makeWindow(id,title,icon,body,w=680,h=450){
- const win=document.createElement('div');win.className='window show';win.dataset.id=id;win.style.width=w+'px';win.style.height=h+'px';
- win.style.left=(80+Math.random()*120)+'px';win.style.top=(60+Math.random()*80)+'px';
- win.innerHTML=`<div class="titlebar"><div class="title">${icon} ${title}</div><div class="win-actions">
- <button onclick="minimizeWin('${id}')">—</button><button onclick="maximizeWin('${id}')">▢</button><button class="close" onclick="closeWin('${id}')">×</button>
- </div></div><div class="content">${body}</div>`;
- $('#os').appendChild(win);dragify(win);bringFront(win);win.addEventListener('mousedown',()=>bringFront(win));return win;
-}
-function getWin(id){return document.querySelector(`.window[data-id="${id}"]`)}
-function bringFront(w){z++;w.style.zIndex=z}
-function closeWin(id){getWin(id)?.remove()}
-function minimizeWin(id){getWin(id)?.classList.remove('show')}
-function maximizeWin(id){const w=getWin(id);if(!w)return;w.classList.toggle('max');bringFront(w)}
+function closeApp(id){document.querySelector(`.app[data-id="${id}"]`)?.classList.remove('open')}
 function openApp(id){
- startMenu.classList.remove('open');controlCenter.classList.remove('open');notificationCenter.classList.remove('open');
- let old=getWin(id);if(old){old.classList.add('show');bringFront(old);return}
- const a=apps.find(x=>x.id===id);let body='',w=680,h=450;
+ $('#controlCenter').classList.remove('open');$('#notifications').classList.remove('open');
+ const a=apps.find(x=>x.id===id);let body='';
  if(id==='notes'){
-  body=`<textarea class="note" id="noteArea" placeholder="Пиши тут...">${escapeHTML(localStorage.getItem('sewa_notes')||'Ласкаво просимо у SeWa Notes!')}</textarea>`;
+  body=`<textarea id="notesArea" class="notesArea" placeholder="Нотатка...">${escapeHTML(localStorage.getItem('sewa_notes')||'')}</textarea>`;
  }else if(id==='calc'){
-  body=`<div class="calc"><div class="calc-display" id="calcDisplay">0</div>${['C','±','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','⌫','='].map(v=>`<button ${['÷','×','−','+','='].includes(v)?'class="accent"':''} onclick="calcPress('${v}')">${v}</button>`).join('')}</div>`;w=390;h=520;
- }else if(id==='terminal'){
-  body=`<div class="terminal" id="terminalBox"><div>SeWa OS Terminal v2.0</div><div>Введи "help" для команд.</div><div id="termOut"></div><div class="term-row"><span class="prompt">sewa@os:~$</span><input id="termInput" class="term-input" autocomplete="off"></div></div>`;
+  body=`<div class="calc"><div class="calcDisplay" id="calcDisplay">0</div>${['AC','±','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','⌫','='].map(v=>`<button class="${['÷','×','−','+','='].includes(v)?'op':(['AC','±','%'].includes(v)?'light':'')}" onclick="calcPress('${v}')">${v}</button>`).join('')}</div>`;
  }else if(id==='settings'){
-  body=`<div class="settings"><div class="sidebar"><div class="side-item active">Персоналізація</div><div class="side-item">Система</div><div class="side-item">Про SeWa OS</div></div>
-  <div class="setting-page"><h2 style="margin-top:0">Налаштування</h2>
-  <div class="card"><b>Акцентний колір</b><div class="swatches">
-   <div class="swatch" style="background:#7c3aed" onclick="setAccent('#7c3aed')"></div>
-   <div class="swatch" style="background:#2563eb" onclick="setAccent('#2563eb')"></div>
-   <div class="swatch" style="background:#22c55e" onclick="setAccent('#22c55e')"></div>
-   <div class="swatch" style="background:#ef4444" onclick="setAccent('#ef4444')"></div>
-   <div class="swatch" style="background:#f59e0b" onclick="setAccent('#f59e0b')"></div>
-  </div></div>
-  <div class="card"><b>Шпалери</b><div class="wallpapers">
-   <div class="wall wprev1" onclick="setWall(1)"></div><div class="wall wprev2" onclick="setWall(2)"></div>
-   <div class="wall wprev3" onclick="setWall(3)"></div><div class="wall wprev4" onclick="setWall(4)"></div>
-  </div></div>
-  <div class="card"><b>Мобільний режим</b><p style="color:var(--muted)">На телефоні програми автоматично відкриваються на весь екран. Підтримуються safe-area для iPhone.</p></div>
-  </div></div>`;
- }else if(id==='files'){
-  body=`<div class="files"><div class="sidebar"><div class="side-item active">🏠 Головна</div><div class="side-item">🖥 Робочий стіл</div><div class="side-item">📄 Документи</div><div class="side-item">⬇ Завантаження</div></div>
-  <div class="file-list"><div class="file"><div class="ficon">📁</div>Документи</div><div class="file"><div class="ficon">📁</div>Фото</div><div class="file"><div class="ficon">📁</div>Проєкти</div><div class="file" ondblclick="openApp('notes')"><div class="ficon">📝</div>notes.txt</div><div class="file"><div class="ficon">💿</div>SeWa OS</div></div></div>`;
+  body=`<div class="settingsList">
+   <div class="group">
+    <div class="settingRow"><div class="left"><div class="settingsIcon">📶</div>Wi‑Fi</div><div>SeWa Network ›</div></div>
+    <div class="settingRow"><div class="left"><div class="settingsIcon">🅱️</div>Bluetooth</div><div>Увімкнено ›</div></div>
+    <div class="settingRow"><div class="left"><div class="settingsIcon">📡</div>Мобільні дані</div><div class="switch on" onclick="toggleSwitch(this)"><span></span></div></div>
+   </div>
+   <div class="group">
+    <div class="settingRow"><div class="left"><div class="settingsIcon">🎨</div>Шпалери</div><div><button onclick="setWall(1)">1</button> <button onclick="setWall(2)">2</button> <button onclick="setWall(3)">3</button></div></div>
+    <div class="settingRow"><div class="left"><div class="settingsIcon">🌙</div>Темний режим</div><div class="switch on" onclick="toggleSwitch(this)"><span></span></div></div>
+   </div>
+   <div class="group">
+    <div class="settingRow"><div class="left"><div class="settingsIcon">⚙️</div>Про систему</div><div>SeWa OS 2.0 ›</div></div>
+   </div>
+  </div>`;
  }else if(id==='browser'){
-  body=`<div class="browser"><div class="browserbar"><button onclick="toast('Назад')">←</button><button onclick="toast('Оновлено')">↻</button><input id="urlBar" value="sewa://home"><button onclick="browserGo()">Go</button></div>
-  <div class="browserpage" id="browserPage"><div><h1>SeWa <b>Browser</b></h1><p>Вбудований браузер SeWa OS. Введи сайт або пошуковий запит.</p></div></div></div>`;
+  body=`<div class="browserTop"><input id="url" value="sewa://home"><button onclick="goBrowser()">Go</button></div><div class="browserPage" id="browserPage"><div><h1>SeWa <b>Browser</b></h1><p>Мобільний браузер SeWa OS. Введи сайт або пошук.</p></div></div>`;
+ }else if(id==='files'){
+  body=`<div class="filesList">
+   <div class="fileRow"><div class="fileIcon">📁</div><div><b>Документи</b><div class="meta">12 файлів</div></div></div>
+   <div class="fileRow"><div class="fileIcon">🖼️</div><div><b>Фото</b><div class="meta">34 елементи</div></div></div>
+   <div class="fileRow"><div class="fileIcon">📦</div><div><b>Завантаження</b><div class="meta">7 файлів</div></div></div>
+   <div class="fileRow" onclick="openApp('notes')"><div class="fileIcon">📝</div><div><b>notes.txt</b><div class="meta">SeWa Notes</div></div></div>
+  </div>`;
  }else if(id==='gallery'){
-  body=`<div class="gallery">${['🌆','🌌','🏙️','🌊','🌲','🌃','🎮','🏁','⚽'].map(x=>`<div class="photo">${x}</div>`).join('')}</div>`;
+  body=`<div class="gallery">${['🌆','🌌','🏙️','🌊','🌲','🌃','🎮','⚽','🏁','🌄','🌉','🌙'].map(x=>`<div class="photo">${x}</div>`).join('')}</div>`;
  }else if(id==='music'){
-  body=`<div class="music"><div><div class="album">🎵</div><h2>SeWa Music</h2><p style="color:var(--muted)">Demo Track · SeWa OS</p><div class="music-controls"><button>⏮</button><button onclick="toast('Відтворення')">▶</button><button>⏭</button></div></div></div>`;
- }else if(id==='about'){
-  body=`<div style="display:grid;place-items:center;height:100%;padding:18px"><div class="system-card"><div class="system-logo">SeWa <b>OS</b></div><h2>Mobile + Desktop Edition 2.0</h2>
-  <p style="color:var(--muted);line-height:1.7">HTML-операційна система з мобільним режимом, lock screen, центром керування, сповіщеннями, повноекранними програмами на телефоні та desktop-вікнами на ПК.</p>
-  <p><b>User:</b> SeWa<br><b>Build:</b> 2026.09<br><b>Engine:</b> HTML / CSS / JavaScript</p></div></div>`;
+  body=`<div class="musicBody"><div><div class="album">🎵</div><h2>SeWa Track</h2><div style="color:var(--muted)">Demo · SeWa Music</div><div class="musicBtns"><button>⏮</button><button onclick="notify('Music','Відтворення SeWa Track')">▶</button><button>⏭</button></div></div></div>`;
+ }else if(id==='terminal'){
+  body=`<div class="terminal" id="terminal"><div>SeWa OS Terminal</div><div>help — список команд</div><div id="termOut"></div><div class="termRow"><span>sewa@ios:~$</span><input id="termInput" class="termInput"></div></div>`;
  }
- const win=makeWindow(id,a.name,a.icon,body,w,h);
- if(id==='notes')$('#noteArea').addEventListener('input',e=>localStorage.setItem('sewa_notes',e.target.value));
+ const app=appTemplate(id,a.name,body);
+ if(id==='notes')$('#notesArea').addEventListener('input',e=>localStorage.setItem('sewa_notes',e.target.value));
  if(id==='terminal')initTerminal();
 }
-function dragify(win){
- const bar=win.querySelector('.titlebar');let d=false,ox=0,oy=0;
- bar.addEventListener('mousedown',e=>{
-  if(innerWidth<=760||e.target.tagName==='BUTTON'||win.classList.contains('max'))return;
-  d=true;let r=win.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;bringFront(win);
- });
- document.addEventListener('mousemove',e=>{if(!d)return;win.style.left=Math.max(0,Math.min(innerWidth-120,e.clientX-ox))+'px';win.style.top=Math.max(30,e.clientY-oy)+'px'});
- document.addEventListener('mouseup',()=>d=false);
-}
 
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function calcPress(v){
- const d=$('#calcDisplay');if(!d)return;
- if(v==='C'){calcExpr='';d.textContent='0';return}
+ const d=$('#calcDisplay');
+ if(v==='AC'){calcExpr='';d.textContent='0';return}
  if(v==='⌫'){calcExpr=calcExpr.slice(0,-1);d.textContent=calcExpr||'0';return}
  if(v==='±'){if(calcExpr)calcExpr=String(-Number(calcExpr));d.textContent=calcExpr||'0';return}
  if(v==='%'){if(calcExpr)calcExpr=String(Number(calcExpr)/100);d.textContent=calcExpr||'0';return}
  if(v==='='){
-  try{let s=calcExpr.replaceAll('×','*').replaceAll('÷','/').replaceAll('−','-');if(!/^[0-9+\-*/.() ]+$/.test(s))throw 0;calcExpr=String(Function('"use strict";return ('+s+')')());d.textContent=calcExpr}catch{calcExpr='';d.textContent='Error'}return;
+  try{let s=calcExpr.replaceAll('×','*').replaceAll('÷','/').replaceAll('−','-');if(!/^[0-9+\-*/.() ]+$/.test(s))throw 0;calcExpr=String(Function('"use strict";return ('+s+')')());d.textContent=calcExpr}catch{calcExpr='';d.textContent='Error'}return
  }
  calcExpr+=v;d.textContent=calcExpr;
 }
+function toggleSwitch(el){el.classList.toggle('on')}
+function toggleRound(el){el.classList.toggle('on')}
+function setWall(n){$('#wallpaper').className=n>1?'w'+n:'';localStorage.setItem('sewa_wall',n)}
+function goBrowser(){
+ const q=$('#url').value.trim();
+ if(q.startsWith('sewa://'))$('#browserPage').innerHTML=`<div><h1>SeWa <b>Browser</b></h1><p>${escapeHTML(q)}</p></div>`;
+ else window.open(q.startsWith('http')?q:'https://www.google.com/search?q='+encodeURIComponent(q),'_blank');
+}
+
+function notify(title,text){
+ const arr=JSON.parse(localStorage.getItem('sewa_notifs')||'[]');
+ arr.unshift({title,text,time:new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})});
+ localStorage.setItem('sewa_notifs',JSON.stringify(arr.slice(0,8)));
+ renderNotifications();
+}
+function renderNotifications(){
+ const arr=JSON.parse(localStorage.getItem('sewa_notifs')||'[]');
+ $('#notifList').innerHTML=arr.length?arr.map(n=>`<div class="notifCard"><b>${escapeHTML(n.title)} · ${n.time}</b><p>${escapeHTML(n.text)}</p></div>`).join(''):`<div class="notifCard"><b>Немає сповіщень</b><p>Тут з'являться нові повідомлення.</p></div>`;
+}
+renderNotifications();
+
 function initTerminal(){
- const i=$('#termInput');i.focus();i.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const cmd=i.value.trim();printTerm(`sewa@os:~$ ${cmd}`);runCommand(cmd);i.value=''});
+ const input=$('#termInput');
+ input.focus();
+ input.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const cmd=input.value.trim(),o=$('#termOut');const line=document.createElement('div');line.textContent='sewa@ios:~$ '+cmd;o.appendChild(line);
+  if(cmd==='help')out('help, clear, date, whoami, version, notify');
+  else if(cmd==='clear')o.innerHTML='';
+  else if(cmd==='date')out(new Date().toString());
+  else if(cmd==='whoami')out('SeWa');
+  else if(cmd==='version')out('SeWa OS Mobile 2.0');
+  else if(cmd.startsWith('notify')){notify('Terminal',cmd.slice(6).trim()||'Test');out('Notification sent')}
+  else out('command not found');
+  input.value='';
+  function out(t){const x=document.createElement('div');x.textContent=t;o.appendChild(x)}
+ });
 }
-function printTerm(t){const o=$('#termOut');const l=document.createElement('div');l.textContent=t;o.appendChild(l);$('#terminalBox').scrollTop=99999}
-function runCommand(cmd){
- const [c,...args]=cmd.toLowerCase().split(' ');
- const map={help:'Команди: help, clear, date, echo, whoami, version, apps, open [app], notify [text], reboot',date:new Date().toString(),whoami:'SeWa',version:'SeWa OS 2.0 Mobile + Desktop',apps:apps.map(a=>a.id).join(', ')};
- if(c==='clear'){$('#termOut').innerHTML='';return}
- if(c==='echo'){printTerm(args.join(' '));return}
- if(c==='open'){apps.some(a=>a.id===args[0])?openApp(args[0]):printTerm('App not found');return}
- if(c==='notify'){notify('Terminal',args.join(' ')||'Test notification');toast('Сповіщення створено');return}
- if(c==='reboot'){location.reload();return}
- printTerm(map[c]??`Command not found: ${cmd}`);
-}
-function browserGo(){
- const q=$('#urlBar').value.trim(),p=$('#browserPage');if(!q)return;
- if(q.startsWith('sewa://'))p.innerHTML=`<div><h1>SeWa <b>Browser</b></h1><p>Внутрішня сторінка: ${escapeHTML(q)}</p></div>`;
- else{window.open(q.startsWith('http')?q:'https://www.google.com/search?q='+encodeURIComponent(q),'_blank');toast('Відкрито у новій вкладці')}
-}
-function setAccent(c){document.documentElement.style.setProperty('--accent',c);localStorage.setItem('sewa_accent',c);toast('Колір змінено')}
-function setWall(n){wallpaper.className=n>1?'w'+n:'';localStorage.setItem('sewa_wall',String(n));toast('Шпалери змінено')}
-function toggleCC(btn,name){btn.classList.toggle('active');toast(name+': '+(btn.classList.contains('active')?'увімкнено':'вимкнено'))}
-$('#brightness').addEventListener('input',e=>{const val=Number(e.target.value)/100;$('#wallpaper').style.filter=`brightness(${val})`});
 
 function updateTime(){
- const d=new Date(),t=d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
- $('#statusClock').textContent=t;$('#lockTime').textContent=t;$('#ccTime').textContent=t;
+ const d=new Date();
+ const t=d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+ $('#statusTime').textContent=t;$('#lockTime').textContent=t;
  $('#lockDate').textContent=d.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'});
- const h=d.getHours();$('#helloTitle').textContent=(h<12?'Доброго ранку':h<18?'Добрий день':'Добрий вечір')+', SeWa';
+ $('#homeDate').textContent=d.toLocaleDateString('uk-UA',{day:'numeric',month:'long'});
+ $('#homeGreeting').textContent=d.getHours()<12?'Доброго ранку':d.getHours()<18?'Добрий день':'Добрий вечір';
 }
-setInterval(updateTime,1000);updateTime();
+updateTime();setInterval(updateTime,1000);
 
-function applyPrefs(){
- const a=localStorage.getItem('sewa_accent');if(a)document.documentElement.style.setProperty('--accent',a);
- const w=Number(localStorage.getItem('sewa_wall')||1);setWall(w);
-}
-applyPrefs();renderNotifications();
+const savedWall=Number(localStorage.getItem('sewa_wall')||1);setWall(savedWall);
+$('#brightness').addEventListener('input',e=>$('#wallpaper').style.filter=`brightness(${Number(e.target.value)/100})`);
+
+let sy=0,sx=0;
+document.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;sx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{
+ const y=e.changedTouches[0].clientY,x=e.changedTouches[0].clientX;
+ const dy=y-sy,dx=x-sx;
+ if(locked && sy>innerHeight-150 && dy<-65){
+   locked=false;$('#lockscreen').classList.add('unlock');setTimeout(()=>$('#lockscreen').classList.add('hidden'),430);return;
+ }
+ if(!locked && sy<55 && sx>innerWidth*0.55 && dy>70){
+   $('#controlCenter').classList.add('open');$('#notifications').classList.remove('open');return;
+ }
+ if(!locked && sy<55 && sx<innerWidth*0.55 && dy>70){
+   $('#notifications').classList.add('open');$('#controlCenter').classList.remove('open');return;
+ }
+ if($('#controlCenter').classList.contains('open') && dy<-65){$('#controlCenter').classList.remove('open')}
+ if($('#notifications').classList.contains('open') && dy<-65){$('#notifications').classList.remove('open')}
+},{passive:true});
 
 window.addEventListener('load',()=>{
- setTimeout(()=>{$('#boot').style.opacity='0';setTimeout(()=>$('#boot').remove(),450)},800);
+ setTimeout(()=>{$('#boot').style.opacity='0';setTimeout(()=>$('#boot').remove(),420)},800);
 });
-
-let touchStartY=0;
-document.addEventListener('touchstart',e=>{touchStartY=e.touches[0]?.clientY||0},{passive:true});
-document.addEventListener('touchend',e=>{
- const y=e.changedTouches[0]?.clientY||0,dy=y-touchStartY;
- if(touchStartY<45 && dy>70 && !locked){notificationCenter.classList.add('open');controlCenter.classList.remove('open');startMenu.classList.remove('open')}
- if(touchStartY>innerHeight-80 && dy<-70 && locked)unlockOS();
-},{passive:true});
 </script>
 </body>
 </html>
